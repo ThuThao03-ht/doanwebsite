@@ -258,10 +258,10 @@
                 © {{ date('Y') }} Hệ thống Quản lý Thực tập Doanh nghiệp - Trường Đại học Đồng Tháp
             </div>
             <div>
-                783 Phạm Hữu Lầu, Phường 6, TP. Cao Lãnh, Đồng Tháp
+                783 Phạm Hữu Lầu, Phường Cao Lãnh, Đồng Tháp
             </div>
             <div>
-                Email: <a href="dhdtt@dthu.edu.vn" style="color: #ffe082;">dhdtt@dthu.edu.vn</a>
+                Email: <a href="dhdt@dthu.edu.vn" style="color: #ffe082;">dhdt@dthu.edu.vn</a>
                 &nbsp;|&nbsp; Hotline: <a href="tel:(0277) 3881518" style="color: #ffe082;">(0277) 3881518
                 </a>
             </div>

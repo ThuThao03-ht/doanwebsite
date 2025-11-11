@@ -69,13 +69,16 @@ public function login(Request $request)
     ]);
 
     // Tìm user theo username
-    $user = DB::table('users')->where('username', $request->username)->first();
+    // $user = DB::table('users')->where('username', $request->username)->first();
+    // Tìm user theo username (PHÂN BIỆT hoa thường)
+$user = DB::table('users')->whereRaw('BINARY username = ?', [$request->username])->first();
+
 
     if (!$user) {
         return back()->with('error', 'Tên đăng nhập hoặc mật khẩu không chính xác!');
     }
 
-    // 🔒 Kiểm tra tài khoản có bị khóa không
+    //  Kiểm tra tài khoản có bị khóa không
     if ($user->status === 'inactive') {
         return back()->with('error', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên!');
     }

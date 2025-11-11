@@ -74,237 +74,211 @@
     </section>
 
     <!-- === Nội dung chính === -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Khối trái (Vị trí + Đăng ký) -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
+        <!-- Hàng 1 -->
+        <!-- Đăng ký của tôi -->
+        <section class="bg-white rounded-xl shadow p-6">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
+                <i class="fas fa-clipboard-list"></i> Đăng ký của tôi
+            </h3>
 
-            <!-- Vị trí thực tập -->
-            <section class="bg-white rounded-xl shadow p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold flex items-center gap-2 text-[#4A7FA7]">
-                        <i class="fas fa-briefcase"></i> Vị trí thực tập
-                    </h3>
-                    <form method="GET" class="flex items-center gap-2">
-                        <select name="trang_thai" class="border rounded-lg px-3 py-2 text-sm">
-                            <option value="con_han" {{ request('trang_thai') == 'con_han' ? 'selected' : '' }}>Còn hạn
-                            </option>
-                            <option value="het_han" {{ request('trang_thai') == 'het_han' ? 'selected' : '' }}>Hết hạn
-                            </option>
-                        </select>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-t">
+                    <thead class="border-b text-sm text-gray-600">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Mã ĐK</th>
+                            <th class="px-4 py-2 text-left">Vị trí</th>
+                            <th class="px-4 py-2 text-left">Ngày đăng ký</th>
+                            <th class="px-4 py-2 text-left">Trạng thái</th>
+                            <th class="px-4 py-2 text-left">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        @forelse($dangKyList as $dk)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2">{{ $dk->dk_id ?? 'DK-' . $dk->id }}</td>
+                            <td class="px-4 py-2">{{ $dk->viTriThucTap->ten_vitri ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $dk->created_at->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2">
+                                <span
+                                    class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                    {{ ucfirst($dk->trang_thai ?? 'chờ xử lý') }}
+                                </span>
+                            </td>
+                            <td class="flex items-center gap-2">
+                                <button
+                                    class="btn-xem-dangky bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-gray-700"
+                                    data-id="{{ $dk->dk_id }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
 
-                        <button type="submit"
-                            class="bg-[#4A7FA7] text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1">
-                            <i class="fas fa-search"></i> Tìm kiếm
-                        </button>
-                    </form>
-                </div>
-
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border-t">
-                        <thead class="border-b text-sm text-gray-600">
-                            <tr>
-                                <th class="px-4 py-2 text-left">Mã</th>
-                                <th class="px-4 py-2 text-left">Vị trí</th>
-                                <th class="px-4 py-2 text-left">Doanh nghiệp</th>
-                                <th class="px-4 py-2 text-left">Số lượng</th>
-                                <th class="px-4 py-2 text-left">Trạng thái</th>
-                                <th class="px-4 py-2 text-left">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm">
-                            @forelse($viTriThucTap as $vt)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2">{{ $vt->ma_vitri ?? 'VT-' . $vt->id }}</td>
-                                <td class="px-4 py-2">{{ $vt->ten_vitri }}</td>
-                                <td class="px-4 py-2">{{ $vt->doanhNghiep->ten_dn ?? '-' }}</td>
-                                <td class="px-4 py-2">
-                                    <span
-                                        class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
-                                        {{ $vt->soluong }} chỗ
-                                    </span>
-                                </td>
-                                <td class="px-4 py-2">
-                                    @if($vt->trang_thai === 'con_han')
-                                    <span
-                                        class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                        Còn hạn
-                                    </span>
-                                    @else
-                                    <span
-                                        class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-semibold">
-                                        Hết hạn
-                                    </span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2 flex items-center gap-2">
-                                    <button
-                                        class="btn-xem-vitri bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md"
-                                        data-id="{{ $vt->vitri_id }}">
-                                        <i class="fas fa-eye"></i>
+                                @if($dk->trang_thai === 'cho_duyet')
+                                <form method="POST" action="{{ route('sinhvien.dangky.huy', $dk->dk_id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1">
+                                        <i class="fas fa-times"></i> Hủy
                                     </button>
+                                </form>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">Chưa có đăng ký nào</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                                    <!-- <button
+        <!-- Thông báo mới -->
+        <section class="bg-white rounded-xl shadow p-6">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
+                <i class="fas fa-bell"></i> Thông báo mới
+            </h3>
+
+            @forelse($thongBaoList as $tb)
+            <a href="{{ route('sinhvien.thongbao.xem', $tb->tb_id) }}"
+                class="border rounded-lg p-3 mb-2 flex items-start gap-2 hover:bg-gray-50 transition">
+                <i class="fas fa-info-circle text-[#4A7FA7] mt-1"></i>
+                <div>
+                    <div class="text-sm font-semibold text-gray-800">
+                        {{ $tb->tieude }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d/m/Y') }}
+                    </div>
+                </div>
+            </a>
+            @empty
+            <p class="text-sm text-gray-500 text-center">Không có thông báo mới</p>
+            @endforelse
+        </section>
+
+
+
+
+        <!-- Hàng 2 -->
+        <!-- Vị trí thực tập -->
+        <section class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold flex items-center gap-2 text-[#4A7FA7]">
+                    <i class="fas fa-briefcase"></i> Vị trí thực tập
+                </h3>
+                <form method="GET" class="flex items-center gap-2">
+                    <select name="trang_thai" class="border rounded-lg px-3 py-2 text-sm">
+                        <option value="con_han" {{ request('trang_thai') == 'con_han' ? 'selected' : '' }}>Còn hạn
+                        </option>
+                        <option value="het_han" {{ request('trang_thai') == 'het_han' ? 'selected' : '' }}>Hết hạn
+                        </option>
+                    </select>
+
+                    <button type="submit"
+                        class="bg-[#4A7FA7] text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </form>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-t">
+                    <thead class="border-b text-sm text-gray-600">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Mã</th>
+                            <th class="px-4 py-2 text-left">Vị trí</th>
+                            <th class="px-4 py-2 text-left">Doanh nghiệp</th>
+                            <th class="px-4 py-2 text-left">Số lượng</th>
+                            <th class="px-4 py-2 text-left">Trạng thái</th>
+                            <th class="px-4 py-2 text-left">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        @forelse($viTriThucTap as $vt)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2">{{ $vt->ma_vitri ?? 'VT-' . $vt->id }}</td>
+                            <td class="px-4 py-2">{{ $vt->ten_vitri }}</td>
+                            <td class="px-4 py-2">{{ $vt->doanhNghiep->ten_dn ?? '-' }}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                    {{ $vt->soluong }} chỗ
+                                </span>
+                            </td>
+                            <td class="px-4 py-2">
+                                @if($vt->trang_thai === 'con_han')
+                                <span
+                                    class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Còn
+                                    hạn</span>
+                                @else
+                                <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-semibold">Hết
+                                    hạn</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2">
+                                <form method="POST" action="{{ route('sinhvien.vitri.dangky') }}">
+                                    @csrf
+                                    <input type="hidden" name="vitri_id" value="{{ $vt->vitri_id }}">
+                                    <button type="submit"
                                         class="bg-[#4A7FA7] hover:bg-[#3a6a8d] text-white px-3 py-1 rounded-md text-sm">
                                         <i class="fas fa-check"></i> Đăng ký
-                                    </button> -->
-
-                                    <form method="POST" action="{{ route('sinhvien.vitri.dangky') }}">
-                                        @csrf
-                                        <input type="hidden" name="vitri_id" value="{{ $vt->vitri_id }}">
-                                        <button type="submit"
-                                            class="bg-[#4A7FA7] hover:bg-[#3a6a8d] text-white px-3 py-1 rounded-md text-sm">
-                                            <i class="fas fa-check"></i> Đăng ký
-                                        </button>
-                                    </form>
-
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-4 text-gray-500">
-                                    Không có vị trí nào.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Đăng ký của tôi -->
-            <section class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
-                    <i class="fas fa-clipboard-list"></i> Đăng ký của tôi
-                </h3>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border-t">
-                        <thead class="border-b text-sm text-gray-600">
-                            <tr>
-                                <th class="px-4 py-2 text-left">Mã ĐK</th>
-                                <th class="px-4 py-2 text-left">Vị trí</th>
-                                <th class="px-4 py-2 text-left">Ngày đăng ký</th>
-                                <th class="px-4 py-2 text-left">Trạng thái</th>
-                                <th class="px-4 py-2 text-left">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm">
-                            @forelse($dangKyList as $dk)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2">{{ $dk->dk_id ?? 'DK-' . $dk->id }}</td>
-                                <td class="px-4 py-2">{{ $dk->viTriThucTap->ten_vitri ?? '-' }}</td>
-                                <td class="px-4 py-2">{{ $dk->created_at->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2">
-                                    <span
-                                        class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                        {{ ucfirst($dk->trang_thai ?? 'chờ xử lý') }}
-                                    </span>
-                                </td>
-                                <td class="flex items-center justify-center gap-2 whitespace-nowrap">
-                                    <button
-                                        class="btn-xem-dangky bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-gray-700"
-                                        data-id="{{ $dk->dk_id }}">
-                                        <i class="fas fa-eye"></i>
                                     </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-gray-500">Không có vị trí nào.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                                    @if($dk->trang_thai === 'cho_duyet')
-                                    <form class="form-huy" method="POST"
-                                        action="{{ route('sinhvien.dangky.huy', $dk->dk_id) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1">
-                                            <i class="fas fa-times"></i> Hủy
-                                        </button>
-                                    </form>
-                                    @endif
-                                </td>
 
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-gray-500">
-                                    Chưa có đăng ký nào
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-
-        <!-- Khối phải (Thông báo + Nhiệm vụ nhanh) -->
-        <div class="flex flex-col gap-6">
-            <!-- Thông báo -->
-            <section class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
-                    <i class="fas fa-bell"></i> Thông báo mới
-                </h3>
-
-                @forelse($thongBaoList as $tb)
-                <a href="{{ route('sinhvien.thongbao.xem', $tb->tb_id) }}"
-                    class="border rounded-lg p-3 mb-2 flex items-start gap-2 hover:bg-gray-50 transition">
-                    <i class="fas fa-info-circle text-[#4A7FA7] mt-1"></i>
-                    <div>
-                        <div class="text-sm font-semibold text-gray-800">
-                            {{ $tb->tieude }}
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d/m/Y') }}
-                        </div>
-                    </div>
+        <!-- Nhiệm vụ nhanh -->
+        <section class="bg-white rounded-xl shadow p-6">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
+                <i class="fas fa-bolt"></i> Nhiệm vụ nhanh
+            </h3>
+            <div class="flex flex-col gap-2">
+                <a href="{{ route('sinhvien.baocao.index') }}"
+                    class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
+                    <i class="fas fa-upload text-[#4A7FA7]"></i> Nộp báo cáo
                 </a>
 
+                <a href="{{ route('sinhvien.danhgia.index') }}"
+                    class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
+                    <i class="fas fa-star text-[#4A7FA7]"></i> Xem đánh giá
+                </a>
 
-                @empty
-                <p class="text-sm text-gray-500 text-center">Không có thông báo mới</p>
-                @endforelse
-            </section>
+                <a href="{{ route('sinhvien.vitri_sinhvien.list') }}"
+                    class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
+                    <i class="fas fa-briefcase text-[#4A7FA7]"></i> Danh sách vị trí thực tập
+                </a>
 
-            <!-- Nhiệm vụ nhanh -->
-            <section class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-[#4A7FA7]">
-                    <i class="fas fa-bolt"></i> Nhiệm vụ nhanh
-                </h3>
-                <div class="flex flex-col gap-2">
+                <a href="{{ route('sinhvien.tiendo.index') }}"
+                    class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
+                    <i class="fas fa-tasks text-[#4A7FA7]"></i> Xem tiến độ thực tập
+                </a>
+            </div>
+        </section>
 
-                    <a href="{{ route('sinhvien.baocao.index') }}"
-                        class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
-                        <i class="fas fa-upload text-[#4A7FA7]"></i> Nộp báo cáo
-                    </a>
-
-                    <a href="{{ route('sinhvien.danhgia.index') }}"
-                        class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
-                        <i class="fas fa-star text-[#4A7FA7]"></i> Xem đánh giá
-                    </a>
-
-                    <a href="{{ route('sinhvien.vitri_sinhvien.list') }}"
-                        class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
-                        <i class="fas fa-briefcase text-[#4A7FA7]"></i> Xem danh sách vị trí thực tập
-                    </a>
-
-                    <a href="{{ route('sinhvien.tiendo.index') }}"
-                        class="border px-3 py-2 rounded-md hover:bg-gray-50 flex items-center gap-2">
-                        <i class="fas fa-tasks text-[#4A7FA7]"></i> Xem tiến độ thực tập
-                    </a>
-
-                </div>
-
-            </section>
-        </div>
     </div>
+
+
+
+
+
 
     <!-- Tiến độ thực tập -->
     <div class="bg-white p-6 rounded-lg shadow-md mt-5">
-        <div class="mb-4">
-            <h2 class="text-lg font-bold flex items-center mb-1" style="color: #4a7fa7;">
-                <i class="fas fa-chart-line mr-2"></i> Trạng thái thực tập của bạn
-            </h2>
-            <p class="text-gray-600 text-sm">Theo dõi quá trình thực tập và mức độ hoàn thành của bạn</p>
-        </div>
+        <h2 class="text-lg font-bold flex items-center mb-4" style="color: #4a7fa7;">
+            <i class="fas fa-chart-line mr-2"></i> Trạng thái thực tập của bạn
+        </h2>
 
         <!-- Trạng thái hiện tại -->
         <div class="mb-3 flex justify-between items-center">
@@ -340,7 +314,7 @@
                 <div class="relative flex items-center justify-center mb-1">
                     <div class="
                     @if(in_array($trangThaiHienTai, ['Chờ duyệt','Đã duyệt','Thực tập','Hoàn thành']))
-                        bg-green-500
+                        bg-yellow-400
                     @else
                         bg-gray-300
                     @endif
@@ -371,7 +345,7 @@
                 <div class="relative flex items-center justify-center mb-1">
                     <div class="
                     @if(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành']))
-                        bg-yellow-400
+                        bg-green-500
                     @else
                         bg-gray-300
                     @endif
@@ -399,9 +373,9 @@
                 <div class="relative flex items-center justify-center mb-1">
                     <div class="
                     @if($trangThaiHienTai == 'Thực tập')
-                        bg-blue-600 animate-pulse
+                        bg-sky-500 
                     @elseif($trangThaiHienTai == 'Hoàn thành')
-                        bg-green-600
+                        bg-emerald-500
                     @else
                         bg-gray-300
                     @endif
@@ -441,7 +415,7 @@
                         <i class="fas fa-trophy"></i>
                     </div>
                 </div>
-                <p class="font-semibold text-gray-600">Hoàn thành</p>
+                <p class="font-semibold text-gray-700">Hoàn thành</p>
                 <p class="text-xs mt-1
                 @if($trangThaiHienTai == 'Hoàn thành') text-green-600
                 @else text-gray-500 @endif
@@ -456,8 +430,6 @@
             </div>
         </div>
     </div>
-
-
 </main>
 
 <!-- Modal xem vị trí -->

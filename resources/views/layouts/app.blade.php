@@ -103,13 +103,14 @@
 
                         <!-- Văn bản -->
                         <div class="logo-text leading-tight">
-                            <h1 class="text-base font-bold" style="color:#f44336; font-weight: bold;">
+                            <h1 class="text-sm font-bold" style="color:#f44336;">
                                 TRƯỜNG ĐẠI HỌC ĐỒNG THÁP
                             </h1>
-                            <p class="text-sm font-semibold" style=" color: #122c4f; font-weight: bold;">
+                            <p class="text-xs font-semibold" style="color: #122c4f;">
                                 Hệ thống Quản lý Thực tập Doanh nghiệp
                             </p>
                         </div>
+
                     </div>
 
                 </div>

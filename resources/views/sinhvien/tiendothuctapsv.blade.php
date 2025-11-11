@@ -65,17 +65,20 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-info text-white btn-view"
-                                        data-id="{{ $t->tiendo_id }}">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning btn-edit" data-id="{{ $t->tiendo_id }}">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $t->tiendo_id }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <div class="d-inline-flex gap-1">
+                                        <button class="btn btn-sm btn-info text-white btn-view"
+                                            data-id="{{ $t->tiendo_id }}">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning btn-edit" data-id="{{ $t->tiendo_id }}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $t->tiendo_id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
+
                             </tr>
                             @empty
                             <tr>
