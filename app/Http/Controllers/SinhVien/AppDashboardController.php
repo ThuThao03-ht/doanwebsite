@@ -195,28 +195,26 @@ public function dangKyViTri(Request $request)
 
     $vitri = ViTriThucTap::where('vitri_id', $request->vitri_id)->firstOrFail();
 
-    // Kiểm tra nếu vị trí hết hạn hoặc đủ số lượng
     if ($vitri->trang_thai !== 'con_han' || $vitri->so_luong_da_dangky >= $vitri->soluong) {
         return redirect()->back()->with('error', 'Vị trí này đã hết hạn hoặc đã đủ số lượng đăng ký!');
     }
 
-    // Kiểm tra sinh viên đã có đăng ký nào chưa bị hủy chưa
+    // CHẶN đăng ký mới nếu sinh viên đang có đăng ký hoạt động
     $daDangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
-        ->whereNotIn('trang_thai', ['huy', 'tu_choi', 'ket_thuc']) // chỉ cho phép đăng ký mới nếu tất cả các đăng ký cũ đã bị hủy hoặc kết thúc
+        ->where('is_delete', 0)
+        ->whereIn('trang_thai', ['cho_duyet', 'da_duyet', 'dang_thuctap'])
         ->exists();
 
     if ($daDangKy) {
         return redirect()->back()->with('error', 'Bạn chỉ được phép đăng ký 1 vị trí thực tập. Vui lòng hủy đăng ký hiện tại trước khi đăng ký vị trí mới!');
     }
 
-    // Tạo đăng ký mới
     DangKyThucTap::create([
         'sv_id' => $sv->sv_id,
         'vitri_id' => $vitri->vitri_id,
         'trang_thai' => 'cho_duyet'
     ]);
 
-    //  Cập nhật số lượng đã đăng ký
     $vitri->so_luong_da_dangky += 1;
     if ($vitri->so_luong_da_dangky >= $vitri->soluong) {
         $vitri->trang_thai = 'het_han';
@@ -225,7 +223,6 @@ public function dangKyViTri(Request $request)
 
     return redirect()->back()->with('success', 'Đăng ký vị trí thực tập thành công!');
 }
-
 
 public function xemDangKy($id)
 {
