@@ -618,23 +618,16 @@
     </style>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        function loadDangKyCount() {
-            fetch('/api/dangkythuctap/count')
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.getElementById('badgeDangKy');
-                    if (badge) badge.textContent = data.count;
-                })
-                .catch(err => console.error('Lỗi tải số lượng đăng ký:', err));
-        }
-
-        // Gọi ngay khi load trang
-        loadDangKyCount();
-
-        // (Tùy chọn) Cập nhật lại mỗi 30 giây
-        setInterval(loadDangKyCount, 30000);
+        fetch("/api/dangkythuctap/count")
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById("badgeDangKy");
+                badge.textContent = data.tong ?? 0;
+            })
+            .catch(err => console.error("Lỗi load số lượng:", err));
     });
     </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

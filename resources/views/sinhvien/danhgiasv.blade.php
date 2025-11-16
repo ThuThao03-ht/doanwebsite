@@ -139,11 +139,12 @@
 
                 let html = `
                         <h6><b>Vị trí:</b> ${dk.vi_tri_thuc_tap?.ten_vitri ?? '---'}</h6>
+                        <br>
                         <hr>
-                        <p><b>Doanh nghiệp:</b> ${dk.danh_gia_doanh_nghiep?.doanh_nghiep?.ten_dn ?? '---'}</p>
-                        <p><b>Điểm DN:</b> ${dk.danh_gia_doanh_nghiep?.diemso ? parseFloat(dk.danh_gia_doanh_nghiep.diemso).toFixed(2) : '---'}</p>
-                        <p><b>Giảng viên:</b> ${dk.danh_gia_giang_vien?.giang_vien?.ho_ten ?? '---'}</p>
-                        <p><b>Điểm GV:</b> ${dk.danh_gia_giang_vien?.diemso ? parseFloat(dk.danh_gia_giang_vien.diemso).toFixed(2) : '---'}</p>
+                        <p><b>Doanh nghiệp:</b> ${dk.danh_gia_doanh_nghiep?.doanh_nghiep?.ten_dn ?? '---'}</p> <br>
+                        <p><b>Điểm DN:</b> ${dk.danh_gia_doanh_nghiep?.diemso ? parseFloat(dk.danh_gia_doanh_nghiep.diemso).toFixed(2) : '---'}</p><br>
+                        <p><b>Giảng viên:</b> ${dk.danh_gia_giang_vien?.giang_vien?.ho_ten ?? '---'}</p><br>
+                        <p><b>Điểm GV:</b> ${dk.danh_gia_giang_vien?.diemso ? parseFloat(dk.danh_gia_giang_vien.diemso).toFixed(2) : '---'}</p><br>
                         <p><b>Điểm trung bình:</b> <span class="score-box">${diem_tb}</span></p>
                     `;
 

@@ -38,7 +38,11 @@
             </thead>
             <tbody class="text-sm">
                 @forelse($viTriThucTap as $vt)
-                <tr class="border-b hover:bg-gray-50 transition">
+                @php
+                $isHighlight = isset($highlightId) && $highlightId == $vt->vitri_id;
+                @endphp
+                <tr id="vitri-row-{{ $vt->vitri_id }}" class="border-b hover:bg-gray-50 transition 
+                               {{ $isHighlight ? 'bg-yellow-100 ring-2 ring-yellow-400' : '' }}">
                     <td class="px-4 py-2">{{ $vt->ma_vitri ?? 'VT-' . $vt->vitri_id }}</td>
                     <td class="px-4 py-2">{{ $vt->ten_vitri }}</td>
                     <td class="px-4 py-2">{{ $vt->doanhNghiep->ten_dn ?? '-' }}</td>
@@ -77,14 +81,18 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-4 text-gray-500">
-                        Không có vị trí nào.
-                    </td>
+                    <td colspan="6" class="text-center py-4 text-gray-500">Không có vị trí nào.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    <div class="mt-6">
+        {{ $viTriThucTap->links('pagination::bootstrap-5') }}
+
+    </div>
+
 </section>
 
 <!-- Modal xem vị trí -->
@@ -167,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeTop.addEventListener('click', hideModalVT);
     closeBottom.addEventListener('click', hideModalVT);
 
+    // --- Xem chi tiết vị trí (AJAX) ---
     document.querySelectorAll('.btn-xem-vitri').forEach(btn => {
         btn.addEventListener('click', async function() {
             const vitri_id = this.dataset.id;
@@ -202,6 +211,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // --- Hiệu ứng cuộn tới dòng highlight ---
+    const highlightRow = document.querySelector('tr.ring-yellow-400');
+    if (highlightRow) {
+        highlightRow.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        // Sau 3 giây làm mờ hiệu ứng highlight dần
+        setTimeout(() => {
+            highlightRow.classList.remove('ring-yellow-400', 'bg-yellow-100');
+            highlightRow.classList.add('bg-white');
+        }, 3000);
+    }
+
+    // --- Hiển thị thông báo SweetAlert ---
     const successMessage = "{{ session('success') ?? '' }}";
     const errorMessage = "{{ session('error') ?? '' }}";
     if (successMessage) {
@@ -219,5 +243,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// --- Highlight theo query id trên URL (ví dụ ?id=6) ---
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
+if (id) {
+    const row = document.querySelector(`#vitri-row-${id}`);
+    if (row) {
+        row.classList.add('bg-yellow-100', 'ring-2', 'ring-yellow-400');
+        row.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        setTimeout(() => {
+            row.classList.remove('ring-yellow-400', 'bg-yellow-100');
+            row.classList.add('bg-white');
+        }, 5000);
+    }
+}
 </script>
+
+
 @endsection

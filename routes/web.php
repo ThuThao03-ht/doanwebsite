@@ -128,6 +128,7 @@ Route::prefix('admin')
         Route::post('/duyet/{id}', [DangKyThucTapController::class, 'duyet'])->name('dangkythuctap.duyet');
         Route::post('/capnhat/{id}', [DangKyThucTapController::class, 'capNhatTrangThai'])->name('dangkythuctap.capnhat');
         Route::post('/huy/{id}', [DangKyThucTapController::class, 'huyDangKy'])->name('dangkythuctap.huy');
+        Route::post('/duyet-bulk', [DangKyThucTapController::class, 'duyetBulk']);
 
     });
     // 🔹 Quản lý tiến độ thực tập

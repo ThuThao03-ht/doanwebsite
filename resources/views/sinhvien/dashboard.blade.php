@@ -114,7 +114,8 @@
                                 </button>
 
                                 @if($dk->trang_thai === 'cho_duyet')
-                                <form method="POST" action="{{ route('sinhvien.dangky.huy', $dk->dk_id) }}">
+                                <form method="POST" action="{{ route('sinhvien.dangky.huy', $dk->dk_id) }}"
+                                    class="form-huy">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
@@ -529,7 +530,27 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Lấy dữ liệu session từ Laravel qua JS
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.form-huy').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Xác nhận hủy?',
+                    text: "Bạn có chắc muốn hủy đăng ký này!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, hủy!',
+                    cancelButtonText: 'Không'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    }); // Lấy dữ liệu session từ Laravel qua JS
     const successMessage = "{{ session('success') ?? '' }}";
     const errorMessage = "{{ session('error') ?? '' }}";
 
