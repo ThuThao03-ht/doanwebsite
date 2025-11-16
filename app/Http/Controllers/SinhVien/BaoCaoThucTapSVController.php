@@ -16,9 +16,11 @@ class BaoCaoThucTapSVController extends Controller
         $user = Auth::user();
         $sv = $user->sinhvien;
 
-        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
-            ->where('trang_thai', '!=', 'tu_choi')
-            ->first();
+       $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
+    ->where('trang_thai', '!=', 'tu_choi')
+    ->orderBy('dk_id', 'desc')   // lấy đăng ký mới nhất
+    ->first();
+
 
         if (!$dangKy) {
             return view('sinhvien.baocaothuctapsv', [
@@ -44,7 +46,11 @@ class BaoCaoThucTapSVController extends Controller
         ]);
 
         $sv = Auth::user()->sinhvien;
-        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)->first();
+        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
+    ->orderBy('dk_id', 'desc')
+    ->first();
+
+     
 
         if (!$dangKy) {
             return redirect()->back()->with('error', 'Bạn chưa đăng ký thực tập.');
