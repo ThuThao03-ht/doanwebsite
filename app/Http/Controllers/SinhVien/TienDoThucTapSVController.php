@@ -6,49 +6,55 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use App\Models\TienDo;
 use App\Models\DangKyThucTap;
 use Carbon\Carbon;
 
 class TienDoThucTapSVController extends Controller
 {
-    //  Trang danh sách tiến độ
-public function index()
-{
-    $user = Auth::user();
-    $sinhVien = $user->sinhvien;
+    /**
+     * Lấy đăng ký thực tập mới nhất của sinh viên
+     */
+    private function getDangKyMoiNhat()
+    {
+        $sv = Auth::user()->sinhvien;
 
-    if (!$sinhVien) {
-        return back()->with('error', 'Không tìm thấy thông tin sinh viên!');
-    }
-
-    $dangKy = DangKyThucTap::where('sv_id', $sinhVien->sv_id)
-        ->where('is_delete', 0)
-        ->orderByDesc('created_at')
-        ->first();
-
-    // Nếu chưa đăng ký thì không báo lỗi, chỉ truyền null để hiển thị thông báo thân thiện
-    $tienDos = [];
-
-    if ($dangKy) {
-        $tienDos = \App\Models\TienDo::where('dk_id', $dangKy->dk_id)
+        return DangKyThucTap::where('sv_id', $sv->sv_id)
             ->where('is_delete', 0)
-            ->orderByDesc('ngay_capnhat')
-            ->get();
+            ->orderByDesc('created_at')
+            ->first();
     }
 
-    return view('sinhvien.tiendothuctapsv', compact('tienDos', 'dangKy'));
-}
+    /**
+     * Trang danh sách tiến độ
+     */
+    public function index()
+    {
+        $dangKy = $this->getDangKyMoiNhat();
+        $tienDos = [];
 
-    // Xem chi tiết tiến độ (cho modal)
+        if ($dangKy) {
+            $tienDos = TienDo::where('dk_id', $dangKy->dk_id)
+                ->where('is_delete', 0)
+                ->orderByDesc('ngay_capnhat')
+                ->get();
+        }
+
+        return view('sinhvien.tiendothuctapsv', compact('tienDos', 'dangKy'));
+    }
+
+    /**
+     * Xem chi tiết tiến độ (cho modal)
+     */
     public function xemChiTiet($id)
     {
         $tienDo = TienDo::with('dangKyThucTap.viTriThucTap.doanhNghiep')->findOrFail($id);
         return response()->json(['tienDo' => $tienDo]);
     }
 
-    //  Xem file PDF trực tiếp
+    /**
+     * Xem file PDF trực tiếp
+     */
     public function xemFile($id)
     {
         $tienDo = TienDo::findOrFail($id);
@@ -57,24 +63,27 @@ public function index()
             return response()->json(['error' => 'File không tồn tại.'], 404);
         }
 
-        $filePath = public_path('storage/' . $tienDo->file_dinhkem);
-        return response()->file($filePath);
+        return response()->file(public_path('storage/' . $tienDo->file_dinhkem));
     }
 
-    //  Tải file PDF
+    /**
+     * Tải file PDF
+     */
     public function taiFile($id)
     {
         $tienDo = TienDo::findOrFail($id);
-        $filePath = public_path('storage/' . $tienDo->file_dinhkem);
+        $path = public_path('storage/' . $tienDo->file_dinhkem);
 
-        if (!file_exists($filePath)) {
+        if (!file_exists($path)) {
             return back()->with('error', 'File không tồn tại!');
         }
 
-        return Response::download($filePath);
+        return Response::download($path);
     }
 
-    // Sinh viên thêm tiến độ
+    /**
+     * Thêm tiến độ
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -82,17 +91,22 @@ public function index()
             'file_dinhkem' => 'nullable|mimes:pdf|max:20480', // 20MB
         ]);
 
-        $user = Auth::user();
-        $sinhVien = $user->sinhvien;
-        $dangKy = DangKyThucTap::where('sv_id', $sinhVien->sv_id)->first();
+        $dangKy = $this->getDangKyMoiNhat();
+
+        if (!$dangKy) {
+            return back()->with('error', 'Bạn chưa đăng ký thực tập.');
+        }
 
         $filePath = null;
+
+        // Upload file
         if ($request->hasFile('file_dinhkem')) {
-            $fileName = 'baocao_kttt_' . time() . '.pdf';
+            $fileName = 'tiendo_' . time() . '.pdf';
             $request->file('file_dinhkem')->move(public_path('storage'), $fileName);
             $filePath = $fileName;
         }
 
+        // Lưu dữ liệu
         TienDo::create([
             'dk_id' => $dangKy->dk_id,
             'noi_dung' => $request->noi_dung,
@@ -104,7 +118,9 @@ public function index()
             ->with('success', 'Thêm tiến độ thành công!');
     }
 
-    // Sửa tiến độ
+    /**
+     * Cập nhật tiến độ
+     */
     public function update(Request $request, $id)
     {
         $tienDo = TienDo::findOrFail($id);
@@ -115,11 +131,14 @@ public function index()
         ]);
 
         $filePath = $tienDo->file_dinhkem;
+
+        // Nếu upload file mới → xóa file cũ
         if ($request->hasFile('file_dinhkem')) {
             if ($filePath && file_exists(public_path('storage/' . $filePath))) {
                 unlink(public_path('storage/' . $filePath));
             }
-            $fileName = 'baocao_kttt_' . time() . '.pdf';
+
+            $fileName = 'tiendo_' . time() . '.pdf';
             $request->file('file_dinhkem')->move(public_path('storage'), $fileName);
             $filePath = $fileName;
         }
@@ -134,29 +153,28 @@ public function index()
             ->with('success', 'Cập nhật tiến độ thành công!');
     }
 
-
+    /**
+     * Xóa tiến độ
+     */
     public function destroy($id)
-{
-    $tienDo = TienDo::findOrFail($id);
+    {
+        $tienDo = TienDo::findOrFail($id);
 
-    // Kiểm tra quyền: sinh viên chỉ được xóa tiến độ của chính mình
-    $user = Auth::user();
-    $sinhVien = $user->sinhvien;
-    $dangKy = DangKyThucTap::where('sv_id', $sinhVien->sv_id)->first();
+        // Kiểm tra quyền: chỉ xóa tiến độ thuộc ĐĂNG KÝ MỚI NHẤT
+        $dangKy = $this->getDangKyMoiNhat();
 
-    if (!$dangKy || $tienDo->dk_id != $dangKy->dk_id) {
-        return response()->json(['error' => 'Bạn không có quyền xóa tiến độ này.'], 403);
+        if (!$dangKy || $tienDo->dk_id != $dangKy->dk_id) {
+            return response()->json(['error' => 'Bạn không có quyền xóa tiến độ này.'], 403);
+        }
+
+        // Xóa file nếu có
+        if ($tienDo->file_dinhkem && file_exists(public_path('storage/' . $tienDo->file_dinhkem))) {
+            unlink(public_path('storage/' . $tienDo->file_dinhkem));
+        }
+
+        // Xóa mềm
+        $tienDo->update(['is_delete' => 1]);
+
+        return response()->json(['success' => 'Xóa tiến độ thành công!']);
     }
-
-    // Xóa file nếu có
-    if ($tienDo->file_dinhkem && file_exists(public_path('storage/' . $tienDo->file_dinhkem))) {
-        unlink(public_path('storage/' . $tienDo->file_dinhkem));
-    }
-
-    // Xóa mềm (đặt is_delete = 1)
-    $tienDo->update(['is_delete' => 1]);
-
-    return response()->json(['success' => 'Xóa tiến độ thành công!']);
-}
-
 }
