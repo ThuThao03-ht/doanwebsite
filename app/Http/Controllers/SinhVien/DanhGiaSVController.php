@@ -25,7 +25,7 @@ class DanhGiaSVController extends Controller
         }
 
         // Lấy danh sách đăng ký thực tập của sinh viên
-        // 👉 Loại bỏ các đăng ký có trạng_thai = 'tu_choi'
+        //  Loại bỏ các đăng ký có trạng_thai = 'tu_choi'
         $dangkyList = DangKyThucTap::with([
             'viTriThucTap.doanhNghiep',
             'danhGiaGiangVien.giangVien',
@@ -33,7 +33,8 @@ class DanhGiaSVController extends Controller
         ])
         ->where('sv_id', $sinhvien->sv_id)
         ->where('is_delete', 0)
-        ->where('trang_thai', '!=', 'tu_choi') // ✅ Chỉ hiển thị các trạng thái khác 'tu_choi'
+       ->whereNotIn('trang_thai', ['tu_choi', 'cho_duyet'])
+
         ->get();
 
         return view('sinhvien.danhgiasv', compact('dangkyList', 'sinhvien'));
