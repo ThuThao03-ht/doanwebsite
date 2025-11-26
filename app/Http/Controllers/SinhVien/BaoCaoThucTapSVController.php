@@ -7,20 +7,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BaoCaoThucTap;
 use App\Models\DangKyThucTap;
+use App\Models\GiangVienDanhGia;
+use App\Models\DoanhNghiepDanhGia;
 
 class BaoCaoThucTapSVController extends Controller
 {
+    // ====== Kiểm tra điều kiện thêm/sửa/xóa báo cáo ======
+    private function canModifyBaoCao($dangKy)
+    {
+        if (!$dangKy) return false;
+
+        // Chỉ cho phép khi trạng thái là đã duyệt hoặc đang thực tập
+        if (!in_array($dangKy->trang_thai, ['da_duyet', 'dang_thuctap'])) {
+            return false;
+        }
+
+        // Kiểm tra đánh giá giảng viên
+        $gvDanhGia = GiangVienDanhGia::where('dk_id', $dangKy->dk_id)
+            ->where('is_delete', 0)
+            ->exists();
+
+        // Kiểm tra đánh giá doanh nghiệp
+        $dnDanhGia = DoanhNghiepDanhGia::where('dk_id', $dangKy->dk_id)
+            ->where('is_delete', 0)
+            ->exists();
+
+        if ($gvDanhGia || $dnDanhGia) return false;
+
+        return true;
+    }
+
     // ====== Trang danh sách báo cáo ======
     public function index()
     {
         $user = Auth::user();
         $sv = $user->sinhvien;
 
-       $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
-    ->where('trang_thai', '!=', 'tu_choi')
-    ->orderBy('dk_id', 'desc')   // lấy đăng ký mới nhất
-    ->first();
-
+        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
+            ->where('trang_thai', '!=', 'tu_choi')
+            ->orderBy('dk_id', 'desc')
+            ->first();
 
         if (!$dangKy) {
             return view('sinhvien.baocaothuctapsv', [
@@ -39,43 +65,42 @@ class BaoCaoThucTapSVController extends Controller
     // ====== Nộp báo cáo ======
     public function store(Request $request)
     {
+        $sv = Auth::user()->sinhvien;
+        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
+            ->orderBy('dk_id', 'desc')
+            ->first();
+
+        if (!$dangKy) {
+            return response()->json(['status' => 'error', 'message' => 'Bạn chưa đăng ký thực tập.']);
+        }
+
+        if (!$this->canModifyBaoCao($dangKy)) {
+            return response()->json(['status' => 'error', 'message' => 'Bạn không thể nộp báo cáo do trạng thái đăng ký hoặc đã có đánh giá.']);
+        }
+
         $request->validate([
             'tieu_de' => 'required|string|max:255',
             'noi_dung' => 'required|string',
             'file_baocao' => 'required|mimes:pdf,doc,docx|max:5120'
         ]);
 
-        $sv = Auth::user()->sinhvien;
-        $dangKy = DangKyThucTap::where('sv_id', $sv->sv_id)
-    ->orderBy('dk_id', 'desc')
-    ->first();
-
-     
-
-        if (!$dangKy) {
-            return redirect()->back()->with('error', 'Bạn chưa đăng ký thực tập.');
-        }
-
         $daCo = BaoCaoThucTap::where('dk_id', $dangKy->dk_id)
             ->where('is_delete', 0)
             ->first();
 
         if ($daCo) {
-            return redirect()->back()->with('error', 'Bạn đã nộp báo cáo rồi. Hãy xóa báo cáo cũ trước.');
+            return response()->json(['status' => 'error', 'message' => 'Bạn đã nộp báo cáo rồi. Hãy xóa báo cáo cũ trước.']);
         }
 
-        // Đường dẫn lưu file
         $uploadPath = public_path('storage');
         if (!file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
-        // Lưu file vào D:\doan\public\storage
         $file = $request->file('file_baocao');
         $fileName = time() . '_' . $file->getClientOriginalName();
         $file->move($uploadPath, $fileName);
 
-        // Lưu vào DB
         BaoCaoThucTap::create([
             'dk_id' => $dangKy->dk_id,
             'tieu_de' => $request->tieu_de,
@@ -84,7 +109,7 @@ class BaoCaoThucTapSVController extends Controller
             'ngay_nop' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Nộp báo cáo thành công!');
+        return response()->json(['status' => 'success', 'message' => 'Nộp báo cáo thành công!']);
     }
 
     // ====== Xem chi tiết báo cáo ======
@@ -106,7 +131,7 @@ class BaoCaoThucTapSVController extends Controller
         $path = public_path('storage/' . $baoCao->file_baocao);
 
         if (!file_exists($path)) {
-            abort(404, 'File báo cáo không tồn tại.');
+            return response()->json(['status' => 'error', 'message' => 'File báo cáo không tồn tại.']);
         }
 
         return response()->file($path);
@@ -119,7 +144,7 @@ class BaoCaoThucTapSVController extends Controller
         $path = public_path('storage/' . $baoCao->file_baocao);
 
         if (!file_exists($path)) {
-            abort(404, 'File báo cáo không tồn tại.');
+            return response()->json(['status' => 'error', 'message' => 'File báo cáo không tồn tại.']);
         }
 
         return response()->download($path);
@@ -129,6 +154,11 @@ class BaoCaoThucTapSVController extends Controller
     public function update(Request $request, $id)
     {
         $baoCao = BaoCaoThucTap::findOrFail($id);
+        $dangKy = $baoCao->dangKyThucTap;
+
+        if (!$this->canModifyBaoCao($dangKy)) {
+            return response()->json(['status' => 'error', 'message' => 'Bạn không thể sửa báo cáo do trạng thái đăng ký hoặc đã có đánh giá.']);
+        }
 
         $request->validate([
             'tieu_de' => 'required|string|max:255',
@@ -158,15 +188,20 @@ class BaoCaoThucTapSVController extends Controller
 
         $baoCao->save();
 
-        return redirect()->back()->with('success', 'Cập nhật báo cáo thành công!');
+        return response()->json(['status' => 'success', 'message' => 'Cập nhật báo cáo thành công!']);
     }
 
     // ====== Xóa báo cáo ======
     public function destroy($id)
     {
         $baoCao = BaoCaoThucTap::findOrFail($id);
-        $filePath = public_path('storage/' . $baoCao->file_baocao);
+        $dangKy = $baoCao->dangKyThucTap;
 
+        if (!$this->canModifyBaoCao($dangKy)) {
+            return response()->json(['status' => 'error', 'message' => 'Bạn không thể xóa báo cáo do trạng thái đăng ký hoặc đã có đánh giá.']);
+        }
+
+        $filePath = public_path('storage/' . $baoCao->file_baocao);
         if (file_exists($filePath)) {
             unlink($filePath);
         }
@@ -174,6 +209,6 @@ class BaoCaoThucTapSVController extends Controller
         $baoCao->is_delete = 1;
         $baoCao->save();
 
-        return redirect()->back()->with('success', 'Xóa báo cáo thành công!');
+        return response()->json(['status' => 'success', 'message' => 'Xóa báo cáo thành công!']);
     }
 }
