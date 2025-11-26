@@ -6,22 +6,51 @@
 <div class="container mx-auto mt-6" id="flash-data" data-success="{{ session('success') }}"
     data-error="{{ session('error') }}">
     <section class="bg-white rounded-xl shadow p-6">
-        <div class="flex justify-between items-center mb-6">
+        <!-- Khối tiêu đề -->
+        <div class="mb-6">
             <h2 class="text-2xl font-semibold text-[#4A7FA7] flex items-center gap-2">
                 <i class="fas fa-clipboard-list"></i> Danh sách báo cáo sinh viên
             </h2>
-
-            <!--  Form tìm kiếm -->
-            <form action="{{ route('giangvien.qldanhgiathuctap') }}" method="GET" class="flex items-center gap-2">
-                <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Nhập tên sinh viên..."
-                    class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A7FA7]" />
-                <button type="submit"
-                    class="px-4 py-2 bg-[#4A7FA7] text-white rounded-lg hover:bg-[#3B6D8F] transition flex items-center gap-1">
-                    <i class="fas fa-search"></i> <span>Tìm</span>
-                </button>
-            </form>
         </div>
 
+        <!-- Khối form tìm kiếm - Thiết kế mới -->
+        <div class="mb-2">
+
+            <form action="{{ route('giangvien.qldanhgiathuctap') }}" method="GET">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-end">
+
+                    <!-- Ô tìm kiếm -->
+                    <div class="flex-1 w-full md:w-auto">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-search text-[#4A7FA7] mr-1"></i>Tìm kiếm sinh viên
+                        </label>
+                        <input type="text" name="search" value="{{ $search ?? '' }}"
+                            placeholder="Nhập tên hoặc mã sinh viên..."
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4A7FA7] focus:border-transparent transition" />
+                    </div>
+
+                    <!-- Checkbox lọc -->
+                    <div class="flex items-center h-[42px]">
+                        <label
+                            class="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition">
+                            <input type="checkbox" name="chua_danhgia" value="1"
+                                class="h-4 w-4 text-[#4A7FA7] rounded focus:ring-[#4A7FA7]"
+                                {{ !empty($chuaDanhGia) ? 'checked' : '' }}>
+                            <span class="text-sm font-medium text-gray-700">Chưa đánh giá</span>
+                        </label>
+                    </div>
+
+                    <!-- Nút tìm kiếm -->
+                    <button type="submit"
+                        class="h-[42px] px-6 bg-[#4A7FA7] text-white font-medium rounded-lg hover:bg-[#3B6D8F] transition flex items-center gap-2 shadow-md hover:shadow-lg">
+                        <i class="fas fa-search"></i>
+                        <span>Tìm kiếm</span>
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border rounded-lg overflow-hidden shadow-md">
                 <thead class="bg-[#4A7FA7] text-white">
@@ -45,7 +74,8 @@
                         <td class="py-2 px-4 border">{{ $bc->ten_vitri }}</td>
                         <td class="py-2 px-4 border">{{ $bc->ten_dn }}</td>
                         <td class="py-2 px-4 border">{{ $bc->tieu_de }}</td>
-                        <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d/m/Y') }}</td>
+                        <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d/m/Y') }}
+                        </td>
                         <td class="py-2 px-4 border">{{ $bc->trangthai_dk }}</td>
                         <td class="py-2 px-4 border text-center font-semibold">{{ $bc->diem_so ?? '-' }}</td>
                         <td class="py-2 px-4 border text-center">
@@ -78,7 +108,8 @@
                                             </p>
                                             <p><strong><i class="fas fa-building mr-1"></i>Doanh nghiệp:</strong>
                                                 {{ $bc->ten_dn }}</p>
-                                            <p><strong><i class="fas fa-briefcase mr-1"></i>Vị trí thực tập:</strong>
+                                            <p><strong><i class="fas fa-briefcase mr-1"></i>Vị trí thực
+                                                    tập:</strong>
                                                 {{ $bc->ten_vitri }}</p>
                                             <p><strong><i class="fas fa-book mr-1"></i>Tiêu đề:</strong>
                                                 {{ $bc->tieu_de }}
