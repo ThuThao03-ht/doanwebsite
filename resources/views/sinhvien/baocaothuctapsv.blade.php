@@ -250,10 +250,24 @@
 
     <script>
     $(function() {
-        // Hiện modal nộp báo cáo
+
+
+        function showSwal(res, modalSelector = null) {
+            // Nếu có modal, đóng modal
+            if (modalSelector) {
+                $(modalSelector).modal('hide');
+            }
+
+            if (res.status === 'success') {
+                Swal.fire('Thành công', res.message, 'success').then(() => location.reload());
+            } else {
+                Swal.fire('Lỗi', res.message, 'error');
+            }
+        }
+
+        // ================= Nộp báo cáo =================
         $('#btnNopBaoCao').click(() => $('#modalNopBaoCao').modal('show'));
 
-        // Nộp báo cáo
         $('#formNopBaoCao').submit(function(e) {
             e.preventDefault();
             let formData = new FormData(this);
@@ -263,40 +277,28 @@
                 data: formData,
                 contentType: false,
                 processData: false,
-                success: res => Swal.fire('Thành công', res.message ||
-                    'Nộp báo cáo thành công!', 'success').then(() => location
-                    .reload()),
-                error: err => Swal.fire('Lỗi', err.responseJSON?.message ||
-                    'Có lỗi xảy ra',
+                success: res => showSwal(res, '#modalNopBaoCao'),
+                error: err => Swal.fire('Lỗi', err.responseJSON?.message || 'Có lỗi xảy ra',
                     'error')
             });
         });
 
+        // ================= Xem chi tiết báo cáo =================
         $(document).on('click', '.btn-view', function() {
             const id = $(this).data('id');
             $.get(`/sinhvien/baocao/${id}`, function(t) {
                 const dk = t.dang_ky_thuc_tap;
 
-                // Sinh viên
                 $('#sv_name').text(dk?.sinh_vien?.ho_ten || '---');
-
-                // Vị trí thực tập
                 $('#vitri_name').text(dk?.vi_tri_thuc_tap?.ten_vitri || '---');
-
-                // Doanh nghiệp
                 $('#dn_name').text(dk?.vi_tri_thuc_tap?.doanh_nghiep?.ten_dn || '---');
 
-                // Giảng viên hướng dẫn (lấy phần tử đầu tiên trong mảng)
                 const pc = dk?.phan_cong_giang_viens?. [0];
                 $('#gv_name').text(pc?.giang_vien?.ho_ten || '---');
 
-                // Thông tin báo cáo
                 if (t.ngay_nop) {
-                    const parts = t.ngay_nop.split(' ')[0].split(
-                    '-'); // tách lấy phần ngày (YYYY-MM-DD)
-                    const formatted =
-                    `${parts[2]}/${parts[1]}/${parts[0]}`; // đổi sang DD/MM/YYYY
-                    $('#ngay_nop').text(formatted);
+                    const parts = t.ngay_nop.split(' ')[0].split('-');
+                    $('#ngay_nop').text(`${parts[2]}/${parts[1]}/${parts[0]}`);
                 } else {
                     $('#ngay_nop').text('---');
                 }
@@ -304,7 +306,6 @@
                 $('#tieu_de').text(t.tieu_de || '---');
                 $('#noi_dung').text(t.noi_dung || '---');
 
-                // File đính kèm
                 if (t.file_baocao) {
                     const fileUrl = `{{ asset('storage') }}/${t.file_baocao}`;
                     $('#file_viewer').attr('src', fileUrl);
@@ -318,16 +319,14 @@
             });
         });
 
-
-        // Sửa báo cáo
+        // ================= Sửa báo cáo =================
         $(document).on('click', '.btn-edit', function() {
             const id = $(this).data('id');
             $.get(`/sinhvien/baocao/${id}`, function(t) {
                 $('#edit_baocao_id').val(t.baocao_id);
                 $('#edit_tieu_de').val(t.tieu_de);
                 $('#edit_noi_dung').val(t.noi_dung);
-                $('#file_hien_tai').attr('href',
-                    `{{ asset('storage') }}/${t.file_baocao}`);
+                $('#file_hien_tai').attr('href', `{{ asset('storage') }}/${t.file_baocao}`);
                 $('#modalSuaBaoCao').modal('show');
             });
         });
@@ -342,16 +341,13 @@
                 data: formData,
                 contentType: false,
                 processData: false,
-                success: res => Swal.fire('Thành công', res.message ||
-                    'Cập nhật thành công!',
-                    'success').then(() => location.reload()),
-                error: err => Swal.fire('Lỗi', err.responseJSON?.message ||
-                    'Có lỗi xảy ra',
+                success: res => showSwal(res, '#modalSuaBaoCao'),
+                error: err => Swal.fire('Lỗi', err.responseJSON?.message || 'Có lỗi xảy ra',
                     'error')
             });
         });
 
-        // Xóa báo cáo
+        // ================= Xóa báo cáo =================
         $(document).on('click', '.btn-delete', function() {
             const id = $(this).data('id');
             Swal.fire({
@@ -369,15 +365,17 @@
                         data: {
                             _token: "{{ csrf_token() }}"
                         },
-                        success: res => Swal.fire('Đã xóa', res.message ||
-                            'Xóa thành công', 'success').then(() => location
-                            .reload())
+                        success: showSwal,
+                        error: err => Swal.fire('Lỗi', err.responseJSON?.message ||
+                            'Có lỗi xảy ra', 'error')
                     });
                 }
             });
         });
+
     });
     </script>
+
 
     </body>
     @endsection
