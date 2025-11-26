@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use App\Models\TienDo;
 use App\Models\DangKyThucTap;
+use App\Models\GiangVienDanhGia;
+use App\Models\DoanhNghiepDanhGia;
 use Carbon\Carbon;
 
 class TienDoThucTapSVController extends Controller
@@ -23,6 +25,33 @@ class TienDoThucTapSVController extends Controller
             ->where('is_delete', 0)
             ->orderByDesc('created_at')
             ->first();
+    }
+
+    /**
+     * Kiểm tra xem có được phép thêm/sửa/xóa tiến độ không
+     */
+    private function canModifyTienDo($dangKy)
+    {
+        if (!$dangKy) return false;
+
+        // Chỉ cho phép khi trạng thái là đã duyệt hoặc đang thực tập
+        if (!in_array($dangKy->trang_thai, ['da_duyet', 'dang_thuctap'])) {
+            return false;
+        }
+
+        // Kiểm tra đánh giá giảng viên
+        $gvDanhGia = GiangVienDanhGia::where('dk_id', $dangKy->dk_id)
+            ->where('is_delete', 0)
+            ->exists();
+
+        // Kiểm tra đánh giá doanh nghiệp
+        $dnDanhGia = DoanhNghiepDanhGia::where('dk_id', $dangKy->dk_id)
+            ->where('is_delete', 0)
+            ->exists();
+
+        if ($gvDanhGia || $dnDanhGia) return false;
+
+        return true;
     }
 
     /**
@@ -86,16 +115,16 @@ class TienDoThucTapSVController extends Controller
      */
     public function store(Request $request)
     {
+        $dangKy = $this->getDangKyMoiNhat();
+
+        if (!$this->canModifyTienDo($dangKy)) {
+            return back()->with('error', 'Bạn không thể thêm tiến độ do trạng thái đăng ký hoặc đã có đánh giá.');
+        }
+
         $request->validate([
             'noi_dung' => 'required|string',
             'file_dinhkem' => 'nullable|mimes:pdf|max:20480', // 20MB
         ]);
-
-        $dangKy = $this->getDangKyMoiNhat();
-
-        if (!$dangKy) {
-            return back()->with('error', 'Bạn chưa đăng ký thực tập.');
-        }
 
         $filePath = null;
 
@@ -124,6 +153,11 @@ class TienDoThucTapSVController extends Controller
     public function update(Request $request, $id)
     {
         $tienDo = TienDo::findOrFail($id);
+        $dangKy = $this->getDangKyMoiNhat();
+
+        if (!$this->canModifyTienDo($dangKy) || $tienDo->dk_id != $dangKy->dk_id) {
+            return back()->with('error', 'Bạn không thể sửa tiến độ do trạng thái đăng ký hoặc đã có đánh giá.');
+        }
 
         $request->validate([
             'noi_dung' => 'required|string',
@@ -159,11 +193,9 @@ class TienDoThucTapSVController extends Controller
     public function destroy($id)
     {
         $tienDo = TienDo::findOrFail($id);
-
-        // Kiểm tra quyền: chỉ xóa tiến độ thuộc ĐĂNG KÝ MỚI NHẤT
         $dangKy = $this->getDangKyMoiNhat();
 
-        if (!$dangKy || $tienDo->dk_id != $dangKy->dk_id) {
+        if (!$this->canModifyTienDo($dangKy) || $tienDo->dk_id != $dangKy->dk_id) {
             return response()->json(['error' => 'Bạn không có quyền xóa tiến độ này.'], 403);
         }
 
