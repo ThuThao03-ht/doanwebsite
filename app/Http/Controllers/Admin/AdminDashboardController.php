@@ -21,13 +21,9 @@ class AdminDashboardController extends Controller
         $totalSinhVien = SinhVien::where('is_delete', 0)->count();
         $totalDoanhNghiep = DoanhNghiep::where('is_delete', 0)->count();
         $totalViTri = ViTriThucTap::where('is_delete', 0)->count();
-        // $totalDangKyThanhCong = DangKyThucTap::where('is_delete', 0)
-        //     ->where('trang_thai', 'da_duyet')
-        //     ->count();
         $totalDangKyThanhCong = DangKyThucTap::where('is_delete', 0)
-    ->whereIn('trang_thai', ['da_duyet', 'dang_thuctap', 'hoan_thanh'])
-    ->count();
-
+            ->whereIn('trang_thai', ['da_duyet', 'dang_thuctap', 'hoan_thanh'])
+            ->count();
 
         // --- BIỂU ĐỒ SINH VIÊN ĐĂNG KÝ THEO LỚP ---
         $chart_sv_data = SinhVien::selectRaw('lop, COUNT(*) as tong_sv')
@@ -62,100 +58,77 @@ class AdminDashboardController extends Controller
         $chart_vitri->dataset('Số lượng tổng', 'bar', $vitriSoluong)->backgroundColor('#9d9d8c');
         $chart_vitri->dataset('Đã đăng ký', 'bar', $vitriDangKy)->backgroundColor('#f0f0e7');
 
-        // --- BIỂU ĐỒ ĐÁNH GIÁ TỔNG QUAN ---
-        $dgDn = DoanhNghiepDanhGia::where('is_delete', 0)->avg('diemso') ?? 0;
-        $dgGv = GiangVienDanhGia::where('is_delete', 0)->avg('diemso') ?? 0;
-
-        $chart_danhgia = new Chart;
-        $chart_danhgia->labels(['Doanh nghiệp', 'Giảng viên']);
-        $chart_danhgia->dataset('Điểm đánh giá', 'doughnut', [$dgDn, $dgGv])
-            ->backgroundColor(['#4A7FA7', '#6AA3CA']);
-
-        // --- BIỂU ĐỒ ĐÁNH GIÁ THEO DOANH NGHIỆP ---
-        $dgDnData = DoanhNghiepDanhGia::selectRaw('sinhvien.ho_ten as ten_sv, doanhnghiep.ten_dn, doanhnghiep_danhgia.diemso')
+        // --- BIỂU ĐỒ ĐÁNH GIÁ KẾT HỢP (Doanh nghiệp + Giảng viên) ---
+        // Lấy dữ liệu đánh giá từ doanh nghiệp
+        $dgDnData = DoanhNghiepDanhGia::selectRaw('sinhvien.ho_ten as ten_sv, doanhnghiep_danhgia.diemso, doanhnghiep_danhgia.created_at')
             ->join('dangky_thuctap', 'doanhnghiep_danhgia.dk_id', '=', 'dangky_thuctap.dk_id')
             ->join('sinhvien', 'dangky_thuctap.sv_id', '=', 'sinhvien.sv_id')
-            ->join('doanhnghiep', 'doanhnghiep_danhgia.dn_id', '=', 'doanhnghiep.dn_id')
             ->where('doanhnghiep_danhgia.is_delete', 0)
             ->get();
 
-        $dnGroups = $dgDnData->groupBy('ten_dn');
-        $svLabels_dn = $dgDnData->pluck('ten_sv')->unique()->values()->toArray();
-
-        $chart_dg_dn = new Chart;
-        $chart_dg_dn->labels($svLabels_dn);
-
-        foreach ($dnGroups as $ten_dn => $records) {
-            $dataset = [];
-            foreach ($svLabels_dn as $sv) {
-                $record = $records->firstWhere('ten_sv', $sv);
-                $dataset[] = $record ? floatval($record->diemso) : null;
-            }
-            $chart_dg_dn->dataset($ten_dn, 'line', $dataset)->options([
-                'fill' => false,
-                'tension' => 0.3,
-            ]);
-        }
-
-        // Thêm đường trung bình tất cả sinh viên (Doanh nghiệp)
-        $avgDnBySV = $dgDnData->groupBy('ten_sv')->map(fn($r) => $r->avg('diemso'))->values()->toArray();
-        $chart_dg_dn->dataset('Trung bình', 'line', $avgDnBySV)->options([
-            'borderColor' => '#FF0000',
-            'borderWidth' => 2,
-            'tension' => 0.3,
-            'fill' => false,
-            'pointRadius' => 3,
-        ]);
-
-        // --- BIỂU ĐỒ ĐÁNH GIÁ THEO GIẢNG VIÊN ---
-        $dgGvData = GiangVienDanhGia::selectRaw('sinhvien.ho_ten as ten_sv, giangvien.ho_ten as ten_gv, giangvien_danhgia.diemso')
+        // Lấy dữ liệu đánh giá từ giảng viên
+        $dgGvData = GiangVienDanhGia::selectRaw('sinhvien.ho_ten as ten_sv, giangvien_danhgia.diemso, giangvien_danhgia.created_at')
             ->join('dangky_thuctap', 'giangvien_danhgia.dk_id', '=', 'dangky_thuctap.dk_id')
             ->join('sinhvien', 'dangky_thuctap.sv_id', '=', 'sinhvien.sv_id')
-            ->join('giangvien', 'giangvien_danhgia.gv_id', '=', 'giangvien.gv_id')
             ->where('giangvien_danhgia.is_delete', 0)
             ->get();
 
-        $gvGroups = $dgGvData->groupBy('ten_gv');
-        $svLabels_gv = $dgGvData->pluck('ten_sv')->unique()->values()->toArray();
+        // Lấy danh sách sinh viên duy nhất
+        $allSinhVien = $dgDnData->pluck('ten_sv')
+            ->merge($dgGvData->pluck('ten_sv'))
+            ->unique()
+            ->values()
+            ->toArray();
 
-        $chart_dg_gv = new Chart;
-        $chart_dg_gv->labels($svLabels_gv);
+        $chart_danhgia_combined = new Chart;
+        $chart_danhgia_combined->labels($allSinhVien);
 
-        foreach ($gvGroups as $ten_gv => $records) {
-            $dataset = [];
-            foreach ($svLabels_gv as $sv) {
-                $record = $records->firstWhere('ten_sv', $sv);
-                $dataset[] = $record ? floatval($record->diemso) : null;
-            }
-            $chart_dg_gv->dataset($ten_gv, 'line', $dataset)->options([
-                'fill' => false,
-                'tension' => 0.3,
-            ]);
+        // Dataset cho đánh giá từ doanh nghiệp (lấy điểm mới nhất)
+        $dnScores = [];
+        foreach ($allSinhVien as $sv) {
+            $record = $dgDnData->where('ten_sv', $sv)
+                ->sortByDesc('created_at')
+                ->first();
+            $dnScores[] = $record ? floatval($record->diemso) : null;
         }
+        $chart_danhgia_combined->dataset('Doanh nghiệp', 'line', $dnScores)->options([
+            'borderColor' => '#3b82f6',
+            'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
+            'tension' => 0.4,
+            'fill' => true,
+            'pointRadius' => 4,
+            'pointBackgroundColor' => '#3b82f6',
+        ]);
 
-        // Thêm đường trung bình tất cả sinh viên (Giảng viên)
-        $avgGvBySV = $dgGvData->groupBy('ten_sv')->map(fn($r) => $r->avg('diemso'))->values()->toArray();
-        $chart_dg_gv->dataset('Trung bình', 'line', $avgGvBySV)->options([
-            'borderColor' => '#FF0000',
-            'borderWidth' => 2,
-            'tension' => 0.3,
-            'fill' => false,
-            'pointRadius' => 3,
+        // Dataset cho đánh giá từ giảng viên (lấy điểm mới nhất)
+        $gvScores = [];
+        foreach ($allSinhVien as $sv) {
+            $record = $dgGvData->where('ten_sv', $sv)
+                ->sortByDesc('created_at')
+                ->first();
+            $gvScores[] = $record ? floatval($record->diemso) : null;
+        }
+        $chart_danhgia_combined->dataset('Giảng viên', 'line', $gvScores)->options([
+            'borderColor' => '#10b981',
+            'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
+            'tension' => 0.4,
+            'fill' => true,
+            'pointRadius' => 4,
+            'pointBackgroundColor' => '#10b981',
         ]);
 
         // --- DANH SÁCH ĐĂNG KÝ GẦN ĐÂY ---
-   $recentDangKy = DangKyThucTap::with([
-    'sinhvien',
-    'vitriThucTap.doanhnghiep'
-])
-->where('is_delete', 0)
-->latest('dk_id') // sắp xếp theo dk_id giảm dần
-->take(3)
-->get();
+        $recentDangKy = DangKyThucTap::with([
+            'sinhvien',
+            'vitriThucTap.doanhnghiep'
+        ])
+        ->where('is_delete', 0)
+        ->latest('dk_id')
+        ->take(3)
+        ->get();
 
-  // --- Lấy thông tin user hiện tại ---
-    $user = Auth::user();
-
+        // --- Lấy thông tin user hiện tại ---
+        $user = Auth::user();
 
         return view('admin.dashboard', compact(
             'totalSinhVien',
@@ -164,9 +137,7 @@ class AdminDashboardController extends Controller
             'totalDangKyThanhCong',
             'chart_sv',
             'chart_vitri',
-            'chart_danhgia',
-            'chart_dg_dn',
-            'chart_dg_gv',
+            'chart_danhgia_combined',
             'recentDangKy',
             'user'
         ));
