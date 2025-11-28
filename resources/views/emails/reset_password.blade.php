@@ -242,18 +242,19 @@
                     <p>Nếu bạn không yêu cầu khôi phục mật khẩu, vui lòng liên hệ với chúng tôi ngay lập tức để bảo vệ
                         tài khoản của bạn.
                         Bạn có thể liên hệ qua email hoặc số điện thoại hỗ trợ của trường.</p>
+                    <p>Thanks.</p>
+                    </piv>
                 </div>
-            </div>
 
-            <div class="footer">
-                <div class="footer-text">
-                    Đây là email tự động từ hệ thống, vui lòng không trả lời email này.<br>
-                    © {{ date('Y') }} Hệ thống Quản lý Thực tập Doanh nghiệp<br>
-                    Trường Đại học Đồng Tháp - Số 783, Phạm Hữu Lầu, Phường 6, TP. Cao Lãnh
+                <div class="footer">
+                    <div class="footer-text">
+                        Đây là email tự động từ hệ thống, vui lòng không trả lời email này.<br>
+                        © {{ date('Y') }} Hệ thống Quản lý Thực tập Doanh nghiệp<br>
+                        Trường Đại học Đồng Tháp - Số 783, Phạm Hữu Lầu, Phường Cao Lãnh, Đồng Tháp
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>
