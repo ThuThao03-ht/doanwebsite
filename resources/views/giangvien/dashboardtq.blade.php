@@ -97,7 +97,8 @@
             <ul>
                 @foreach($sinhviens as $index => $sv)
                 <li class="flex flex-col border-b py-2 hover:bg-gray-50 transition duration-200 mb-2"
-                    x-show="showAll || {{ $index }} < 2">
+                    x-show="showAll || {{ $index }} < 1" x-cloak>
+
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div
@@ -127,7 +128,7 @@
             </ul>
 
             <!-- Nút xem thêm / thu gọn -->
-            @if(count($sinhviens) > 2)
+            @if(count($sinhviens) > 1)
             <button @click="showAll = !showAll" class="mt-2 text-blue-500 hover:text-blue-700 font-semibold text-sm">
                 <span x-text="showAll ? 'Thu gọn' : 'Xem thêm'"></span>
             </button>
