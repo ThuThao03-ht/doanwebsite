@@ -24,6 +24,13 @@ class AdminDashboardController extends Controller
         $totalDangKyThanhCong = DangKyThucTap::where('is_delete', 0)
             ->whereIn('trang_thai', ['da_duyet', 'dang_thuctap', 'hoan_thanh'])
             ->count();
+        //  Thống kê thực tập đã HOÀN THÀNH
+        $totalHoanThanh = DangKyThucTap::where('is_delete', 0)
+            ->where('trang_thai', 'hoan_thanh')
+            ->count();
+
+        // Thống kê tổng giảng viên
+        $totalGiangVien = \App\Models\GiangVien::where('is_delete', 0)->count();
 
         // --- BIỂU ĐỒ SINH VIÊN ĐĂNG KÝ THEO LỚP ---
         $chart_sv_data = SinhVien::selectRaw('lop, COUNT(*) as tong_sv')
@@ -135,6 +142,8 @@ class AdminDashboardController extends Controller
             'totalDoanhNghiep',
             'totalViTri',
             'totalDangKyThanhCong',
+            'totalHoanThanh',     
+            'totalGiangVien',     
             'chart_sv',
             'chart_vitri',
             'chart_danhgia_combined',
