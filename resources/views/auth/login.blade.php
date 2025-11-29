@@ -29,7 +29,7 @@
 
     /* Header */
     header {
-        background-color: #4a7fa7;
+        background-color: #ffffff;
         color: #fff;
         padding: 15px 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -104,12 +104,15 @@
 
     /* Footer */
     footer {
-        background-color: #4a7fa7;
-        color: #fff;
+        background-color: #2c5a78;
+        color: #ffffff;
         text-align: center;
         padding: 15px 0;
         font-size: 0.95rem;
     }
+
+
+
 
     footer a {
         color: #ffd966;
@@ -131,6 +134,14 @@
             transform: translateY(0);
         }
     } */
+    #forgotPasswordModal .form-control:focus {
+        border-color: #4a7fa7;
+        box-shadow: 0 0 6px rgba(74, 127, 167, 0.35);
+    }
+
+    #forgotPasswordModal .input-group-text i {
+        font-size: 16px;
+    }
 
     .form-label .text-danger {
         font-weight: bold;
@@ -213,43 +224,62 @@
     </div>
 
     <!--  MODAL QUÊN MẬT KHẨU -->
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
+    <!-- MODAL QUÊN MẬT KHẨU PREMIUM UI -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header" style="background-color:#4a7fa7; color:white;">
-                    <h5 class="modal-title fw-bold" id="forgotPasswordModalLabel">
-                        <i class="bi bi-envelope-at me-2"></i>Quên mật khẩu
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; overflow: hidden;">
+
+                <!-- HEADER -->
+                <div class="modal-header text-white"
+                    style="background: linear-gradient(135deg, #4a7fa7, #6ba4c7); border: none;">
+                    <h5 class="modal-title d-flex align-items-center gap-2" id="forgotPasswordLabel"
+                        style="font-weight: 700;">
+                        <i class="fa-solid fa-unlock-keyhole fs-4"></i>
+                        Quên mật khẩu
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
+                <!-- BODY -->
                 <form method="POST" action="{{ route('forgot.password') }}">
                     @csrf
-                    <div class="modal-body">
-                        <p class="text-secondary mb-3">Nhập email bạn đã dùng để đăng ký thông tin của bạn. Hệ thống sẽ
-                            gửi
-                            mật
-                            khẩu mới đến email của bạn.</p>
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" class="form-control rounded-3"
-                                placeholder="example@gmail.com" required>
+                    <div class="modal-body" style="padding: 28px;">
+
+                        <p class="text-secondary mb-3" style="font-size: 15px;">
+                            Nhập địa chỉ email bạn đã sử dụng để đăng ký tài khoản. Hệ thống sẽ gửi mật khẩu mới đến
+                            email của bạn.
+                        </p>
+
+                        <label class="form-label fw-semibold mb-1">Email <span class="text-danger">*</span></label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text bg-light" style="border-radius: 10px 0 0 10px;">
+                                <i class="fa-solid fa-envelope text-secondary"></i>
+                            </span>
+                            <input type="email" name="email" required placeholder="example@gmail.com"
+                                class="form-control" style="border-radius: 0 10px 10px 0;">
                         </div>
+
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle me-1"></i>Đóng
+
+                    <!-- FOOTER -->
+                    <div class="modal-footer px-4 pb-3" style="border: none;">
+                        <button type="button" class="btn btn-light border px-4 py-2" data-bs-dismiss="modal"
+                            style="border-radius: 10px;">
+                            <i class="fa-solid fa-xmark me-1"></i>Đóng
                         </button>
-                        <button type="submit" class="btn" style="background-color:#4a7fa7; color:white;">
-                            <i class="bi bi-send-check me-1"></i>Gửi mật khẩu mới
+
+                        <button type="submit" class="btn text-white px-4 py-2"
+                            style="background-color:#4a7fa7; border-radius: 10px;">
+                            <i class="fa-solid fa-paper-plane me-1"></i>Gửi mật khẩu mới
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
+
 
     <!--  FOOTER -->
     <footer>

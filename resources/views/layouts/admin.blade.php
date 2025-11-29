@@ -39,8 +39,10 @@
 
     /* Header */
     .header {
-        background: linear-gradient(135deg, #4A7FA7 0%, #6AA3CA 100%);
-        color: white;
+        background: #ffffff;
+        /* đổi sang màu trắng */
+        color: #333;
+        /* màu chữ tối hơn để dễ nhìn */
         padding: 0 30px;
         height: 70px;
         display: flex;
@@ -53,6 +55,7 @@
         right: 0;
         z-index: 1000;
     }
+
 
     .header-left {
         display: flex;

@@ -16,8 +16,8 @@
                 <div class="position-relative">
                     <img src="{{ $user->avatar 
                         ? asset('storage/upload/avatar/' . $user->avatar) 
-                        : 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" class="rounded-circle shadow-sm"
-                        width="130" height="130" id="avatarPreview"
+                        : 'https://i.pinimg.com/736x/2f/c9/5a/2fc95af4700a971da5024ac5f260bcb8.jpg' }}"
+                        class="rounded-circle shadow-sm" width="130" height="130" id="avatarPreview"
                         style="object-fit: cover; border: 4px solid #ffffff;">
 
                     <form method="POST" action="{{ route('giangvien.hoso.updateAvatar') }}"

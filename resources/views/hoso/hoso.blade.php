@@ -41,7 +41,7 @@
                 <div class="position-relative">
                     <div
                         style="position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;">
-                        <img src="{{ asset($user->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png') }}"
+                        <img src="{{ asset($user->avatar ?? 'https://i.pinimg.com/736x/2f/c9/5a/2fc95af4700a971da5024ac5f260bcb8.jpg') }}"
                             class="rounded-circle shadow" width="140" height="140" id="avatarPreview"
                             style="object-fit: cover; border: 5px solid #ffffff; box-shadow: 0 8px 20px rgba(74, 127, 167, 0.2);">
 
