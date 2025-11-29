@@ -41,26 +41,29 @@ body {
 }
 
 /* ==== ENHANCED STATS CARDS ==== */
+
 .stats-row {
-    display: flex;
-    /* Cho các item nằm trên cùng 1 dòng */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 ô mỗi hàng */
     gap: 20px;
-    /* Khoảng cách giữa các ô */
-    flex-wrap: wrap;
-    /* Nếu màn hình nhỏ, các ô sẽ xuống dòng */
-    justify-content: space-between;
-    /* Căn đều các ô */
 }
 
+
+/* Card */
 .stat-item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
+    /* flex: 1 1 260px; */
+    width: 100%;
+    padding: 20px 24px;
+    border-radius: 22px;
     display: flex;
     align-items: center;
-    flex: 1 1 200px;
-    /* Mỗi ô tối thiểu 200px, co dãn linh hoạt */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    background: #ffffff;
+    border: none;
+    position: relative;
+
+    /* Màu nền pastel giống ảnh */
 }
 
 .stat-icon-box {
@@ -87,19 +90,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Background gradient overlay shine effect */
-/* .stat-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3));
-    transition: left 0.6s ease;
-    pointer-events: none;
-    z-index: 1;
-} */
 
 .stat-item:hover::before {
     left: 100%;
@@ -112,20 +102,19 @@ body {
     border-color: rgba(91, 124, 230, 0.2);
 }
 
+/* Icon box */
 .stat-icon-box {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
-    color: #fff;
-    flex-shrink: 0;
-    position: relative;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    transition: all 0.3s ease;
-    z-index: 2;
+    font-size: 26px;
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.45);
+    /* nền icon mờ giống ảnh */
+    backdrop-filter: blur(4px);
 }
 
 .stat-item:hover .stat-icon-box {
@@ -133,21 +122,36 @@ body {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-.stat-item:nth-child(1) .stat-icon-box {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+.stat-item:nth-child(1) {
+    background: #dbeafe;
+    /* xanh dương nhạt */
 }
 
-.stat-item:nth-child(2) .stat-icon-box {
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+.stat-item:nth-child(2) {
+    background: #e0f2fe;
+    /* xanh cyan nhạt */
 }
 
-.stat-item:nth-child(3) .stat-icon-box {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+.stat-item:nth-child(3) {
+    background: #dcfce7;
+    /* xanh lá nhạt */
 }
 
-.stat-item:nth-child(4) .stat-icon-box {
-    background: linear-gradient(135deg, #34d399, #10b981);
+.stat-item:nth-child(4) {
+    background: #fce7f3;
+    /* hồng pastel */
 }
+
+.stat-item:nth-child(5) {
+    background: #fef9c3;
+    /* vàng nhạt pastel */
+}
+
+.stat-item:nth-child(6) {
+    background: #ede9fe;
+    /* tím nhạt pastel */
+}
+
 
 .stat-details {
     flex: 1;
@@ -155,17 +159,12 @@ body {
     z-index: 2;
 }
 
+/* Text */
 .stat-number {
-    font-size: 32px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #1a1a2e, #374151);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
     margin-bottom: 4px;
-    letter-spacing: -0.5px;
-    transition: all 0.3s ease;
 }
 
 .stat-item:hover .stat-number {
@@ -174,11 +173,8 @@ body {
 
 .stat-label {
     font-size: 13px;
-    color: #6b7280;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    transition: color 0.3s ease;
+    color: #475569;
+    font-weight: 500;
 }
 
 .stat-item:hover .stat-label {
@@ -492,6 +488,30 @@ body {
                 <div class="stat-label">ĐÃ ĐĂNG KÝ</div>
             </div>
         </div>
+
+        <!-- SỐ GIẢNG VIÊN -->
+        <div class="stat-item">
+            <div class="stat-icon-box">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-number">{{ $totalGiangVien }}</div>
+                <div class="stat-label">GIẢNG VIÊN</div>
+            </div>
+        </div>
+
+        <!-- THỰC TẬP HOÀN THÀNH -->
+        <div class="stat-item">
+            <div class="stat-icon-box">
+                <i class="bi bi-flag-fill"></i>
+            </div>
+            <div class="stat-details">
+                <div class="stat-number">{{ $totalHoanThanh }}</div>
+                <div class="stat-label">HOÀN THÀNH THỰC TẬP</div>
+            </div>
+        </div>
+
+
     </div>
 
     {{-- MAIN CHARTS --}}
