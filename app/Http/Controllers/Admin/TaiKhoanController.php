@@ -49,7 +49,7 @@ public function index(Request $request)
         $user->status = $user->status === 'active' ? 'inactive' : 'active';
         $user->save();
 
-        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+        return redirect()->back()->with('success', 'Thay đổi trạng thái thành công!');
     }
 
 

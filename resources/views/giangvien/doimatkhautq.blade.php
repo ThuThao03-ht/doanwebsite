@@ -52,7 +52,7 @@
                     <small class="error-message"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</small>
                     @enderror
                     <small class="text-muted mt-1 d-block">
-                        <i class="fas fa-info-circle me-1"></i>Tối thiểu 8 ký tự
+                        <i class="fas fa-info-circle me-1"></i>Tối thiểu 6 ký tự
                     </small>
                 </div>
 

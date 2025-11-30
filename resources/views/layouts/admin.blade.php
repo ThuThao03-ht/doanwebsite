@@ -273,6 +273,27 @@
 </head>
 
 <body>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var resetMenu = <?php echo session()->has('resetMenu') ? 'true' : 'false'; ?>;
+
+        if (resetMenu) {
+            localStorage.removeItem('activeMenu');
+            localStorage.removeItem('menuSettingOpen');
+
+            // Đợi sidebar render xong (vì Blade load theo layout)
+            setTimeout(function() {
+                var sidebarScroll = document.querySelector('.sidebar-menu');
+                if (sidebarScroll) {
+                    sidebarScroll.scrollTop = 0;
+                    console.log("Sidebar reset to top");
+                }
+            }, 50);
+        }
+    });
+    </script>
+
     <!-- Header -->
     <div class="header">
         <div class="header-left">
@@ -572,15 +593,15 @@
 
 
             </div>
-
+            <div class="menu-section">
+                <a href="{{ route('logout') }}" class="menu-item"><i class="fas fa-sign-out-alt"></i><span>Đăng
+                        xuất</span></a>
+            </div>
         </div>
 
-        <div class="menu-section">
-            <a href="{{ route('logout') }}" class="menu-item"><i class="fas fa-sign-out-alt"></i><span>Đăng
-                    xuất</span></a>
-        </div>
+
     </div>
-    </div>
+
 
 
     <!-- Thêm Chart.js -->
@@ -715,16 +736,17 @@
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const sidebar = document.getElementById('sidebar');
+        const sidebarMenu = document.querySelector('.sidebar-menu');
         const allLinks = document.querySelectorAll('.menu-item, .menuSetting-item');
         const menuSettingList = document.getElementById('menuSettingList');
 
         // ===== 1. Giữ vị trí cuộn sidebar =====
-        sidebar.addEventListener('scroll', () => {
-            localStorage.setItem('sidebarScrollTop', sidebar.scrollTop);
+        sidebarMenu.addEventListener('scroll', () => {
+            localStorage.setItem('sidebarScrollTop', sidebarMenu.scrollTop);
         });
+
         const savedScroll = localStorage.getItem('sidebarScrollTop');
-        if (savedScroll) sidebar.scrollTop = savedScroll;
+        if (savedScroll) sidebarMenu.scrollTop = savedScroll;
 
         // ===== 2. Khi click vào link, lưu URL và loại menu =====
         allLinks.forEach(link => {
@@ -738,21 +760,19 @@
             });
         });
 
-        // ===== 3. Khôi phục trạng thái active sau khi reload =====
+        // ===== 3. Khôi phục trạng thái active =====
         const currentUrl = window.location.href;
         const savedActive = localStorage.getItem('activeMenu');
         const savedMenuSettingOpen = localStorage.getItem('menuSettingOpen');
 
-        // Xóa hết active trước
         allLinks.forEach(link => link.classList.remove('active'));
 
-        // Kiểm tra URL hiện tại hoặc URL đã lưu
         const matchUrl = savedActive || currentUrl;
 
         allLinks.forEach(link => {
             if (link.href === matchUrl) {
                 link.classList.add('active');
-                // Nếu là mục con trong dropdown => mở menu Cài đặt
+
                 if (menuSettingList && menuSettingList.contains(link)) {
                     menuSettingList.classList.add('active');
                     const parentSubList = link.closest('.menuSetting-subList');
@@ -761,12 +781,13 @@
             }
         });
 
-        // Nếu trước đó dropdown Cài đặt được mở => mở lại
         if (savedMenuSettingOpen === 'true' && menuSettingList) {
             menuSettingList.classList.add('active');
         }
     });
     </script>
+
+
 
 
 

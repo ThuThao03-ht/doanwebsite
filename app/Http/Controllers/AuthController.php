@@ -88,12 +88,19 @@ $user = DB::table('users')->whereRaw('BINARY username = ?', [$request->username]
         return back()->with('error', 'Tên đăng nhập hoặc mật khẩu không chính xác!');
     }
 
-    // Đăng nhập user theo ID
+    // // Đăng nhập user theo ID
+    // Auth::loginUsingId($user->user_id);
+
+    // // Kiểm tra quyền
+    // if ($user->role_id == 1) {
+    //     return redirect()->route('admin.dashboard');
     Auth::loginUsingId($user->user_id);
 
-    // Kiểm tra quyền
-    if ($user->role_id == 1) {
-        return redirect()->route('admin.dashboard');
+$resetMenu = true; // Flag để reset active menu trên front-end
+
+if ($user->role_id == 1) {
+    return redirect()->route('admin.dashboard')->with('resetMenu', $resetMenu);
+
     } elseif ($user->role_id == 2) {
         return redirect()->route('sinhvien.dashboard');
     } elseif ($user->role_id == 3) {
@@ -110,7 +117,7 @@ $user = DB::table('users')->whereRaw('BINARY username = ?', [$request->username]
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
+        return redirect()->route('login')->with('');
     }
 
     // =========================
