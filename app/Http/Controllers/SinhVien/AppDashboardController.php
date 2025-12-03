@@ -110,9 +110,13 @@ $thongBaoList = ThongBaoUser::join('thongbao', 'thongbao.tb_id', '=', 'thongbao_
         // ]);
          $latestDangKy = $dangKyList->first();
         $phanTramTienDo = $this->tinhPhanTramTienDo($latestDangKy->trang_thai ?? null);
-        $mauTienDo = $this->getColorByProgress($phanTramTienDo);
-        $textTienDo = $this->getProgressText($phanTramTienDo);
+        // $mauTienDo = $this->getColorByProgress($phanTramTienDo);
+        // $textTienDo = $this->getProgressText($phanTramTienDo);
+        $mauTienDo = $this->getColorByProgress($phanTramTienDo, $latestDangKy->trang_thai ?? null);
 
+        $textTienDo = $this->getProgressText($phanTramTienDo, $latestDangKy->trang_thai ?? null);
+
+        $latestDangKy = $dangKyList->first();
         return view('sinhvien.dashboard', [
             'countViTriMo'      => $countViTriMo,
             'countDangKy'       => $countDangKy,
@@ -120,6 +124,7 @@ $thongBaoList = ThongBaoUser::join('thongbao', 'thongbao.tb_id', '=', 'thongbao_
             'viTriThucTap'      => $viTriThucTap,
             'dangKyList'        => $dangKyList,
             'thongBaoList'      => $thongBaoList,
+             'latestDangKy'     => $latestDangKy,
             'phanTramTienDo'    => $phanTramTienDo,
             'mauTienDo'         => $mauTienDo,
             'textTienDo'        => $textTienDo,
@@ -302,6 +307,7 @@ private function tinhPhanTramTienDo($trangThai)
         'da_duyet'      => 40,
         'dang_thuctap'  => 70,
         'hoan_thanh'    => 100,
+        'tu_choi'      => 0,
         default         => 0,
     };
 }
@@ -309,22 +315,29 @@ private function tinhPhanTramTienDo($trangThai)
 /**
  * Chọn màu hiển thị tương ứng với phần trăm tiến độ
  */
-private function getColorByProgress($phanTram)
+private function getColorByProgress($phanTram, $trangThai = null)
 {
+    if ($trangThai === 'tu_choi') {
+        return '#F87171'; // đỏ
+    }
+
     return match (true) {
         $phanTram <= 20   => '#FACC15', // vàng
         $phanTram <= 40   => '#60A5FA', // xanh dương nhạt
         $phanTram <= 70   => '#34D399', // xanh lá
-        $phanTram == 100  => '#4a7fa7', // xám
-        default           => '#D1D5DB', // mặc định xám nhạt
+        $phanTram == 100  => '#4a7fa7', // xanh đậm
+        default           => '#D1D5DB',
     };
 }
 
 /**
  * Mô tả văn bản tương ứng với phần trăm tiến độ
  */
-private function getProgressText($phanTram)
-{
+private function getProgressText($phanTram, $trangThai = null)
+{ 
+    if ($trangThai === 'tu_choi') {
+        return 'Bị từ chối';
+    }
     return match ($phanTram) {
         0    => 'Chưa đăng ký',
         20   => 'Chờ duyệt',

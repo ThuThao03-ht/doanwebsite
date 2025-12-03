@@ -272,165 +272,189 @@
 
 
 
+    <!-- Hộp trạng thái thực tập -->
+    <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+
+        <!-- Tiêu đề vị trí -->
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">
+                    {{ $latestDangKy->viTriThucTap->ten_vitri ?? 'Chưa có vị trí thực tập' }}
+                </h2>
+
+                <p class="text-gray-600 flex items-center mt-1">
+                    <i class="fa-solid fa-building mr-2" style="color: #4a7fa7;"></i>
+                    {{ $latestDangKy->viTriThucTap->doanhNghiep->ten_dn ?? '---' }}
+                </p>
+
+                <p class="text-gray-600 flex items-center mt-1">
+                    <i class="fa-solid fa-calendar-days mr-2"></i>
+                    Đăng ký: {{ $latestDangKy->created_at ? $latestDangKy->created_at->format('d/m/Y') : '---' }}
+                </p>
+            </div>
+
+            <!-- Phần trăm -->
+            <div class="bg-red-100 text-red-600 font-bold text-lg px-3 py-1 rounded-xl inline-block">
+                {{ $phanTramTienDo ?? 0 }}%
+            </div>
 
 
-
-    <!-- Tiến độ thực tập -->
-    <div class="bg-white p-6 rounded-lg shadow-md mt-5">
-        <h2 class="text-lg font-bold flex items-center mb-4" style="color: #4a7fa7;">
-            <i class="fas fa-chart-line mr-2"></i> Trạng thái thực tập của bạn
-        </h2>
-
-        <!-- Trạng thái hiện tại -->
-        <div class="mb-3 flex justify-between items-center">
-            <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-xs font-semibold">
-                {{ strtoupper($textTienDo ?? 'CHƯA CÓ THÔNG TIN') }}
-            </span>
-            <span class="text-gray-600 font-semibold">{{ $phanTramTienDo ?? 0 }}%</span>
         </div>
 
-        <!-- Thanh tiến độ -->
+
+        <!-- Trạng thái -->
+        <div class="flex items-center mb-1">
+            @switch($textTienDo)
+            @case('Chờ duyệt')
+            <i class="fa-solid fa-clock text-yellow-500 mr-2"></i>
+            @break
+            @case('Đã duyệt')
+            <i class="fa-solid fa-circle-check text-green-600 mr-2"></i>
+            @break
+            @case('Thực tập')
+            <i class="fa-solid fa-briefcase text-blue-600 mr-2"></i>
+            @break
+            @case('Hoàn thành')
+            <i class="fa-solid fa-trophy text-emerald-600 mr-2"></i>
+            @break
+            @case('Bị từ chối')
+            <i class="fa-solid fa-xmark text-red-600 mr-2"></i>
+            @break
+            @default
+            <i class="fa-solid fa-circle-info text-gray-500 mr-2"></i>
+            @endswitch
+
+            <span class="text-sm font-semibold 
+            @if($textTienDo == 'Bị từ chối') text-red-600 @else text-blue-600 @endif">
+                {{ $textTienDo ?? '...' }}
+            </span>
+        </div>
+
         @php
         $phanTram = $phanTramTienDo ?? 0;
         $mau = $mauTienDo ?? '#9ca3af';
         $style = "width: {$phanTram}%; background-color: {$mau};";
         @endphp
 
-        <div class="w-full bg-gray-200 rounded-full h-3 mb-6 overflow-hidden">
-            <div class="h-2.5 rounded-full" style="<?php echo $style; ?>"></div>
-
-
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden mb-3">
+            <div class="h-3 rounded-full transition-all" style="<?php echo $style; ?>">
+            </div>
         </div>
 
 
-        <!-- Các bước tiến độ -->
+        <!-- Thông báo trạng thái -->
+        <div class="flex items-start text-sm mb-6">
+            <i class="fa-solid fa-circle-info mr-2 mt-0.5"></i>
+
+            @switch($textTienDo)
+            @case('Chờ duyệt')
+            <span class="text-yellow-600">Đơn đăng ký đang trong quá trình chờ phê duyệt</span>
+            @break
+
+            @case('Đã duyệt')
+            <span class="text-green-600">Đơn đã được duyệt, chuẩn bị bắt đầu thực tập</span>
+            @break
+
+            @case('Thực tập')
+            <span class="text-blue-600">Đang trong quá trình thực tập tại doanh nghiệp</span>
+            @break
+
+            @case('Hoàn thành')
+            <span class="text-emerald-600">Chúc mừng! Bạn đã hoàn thành thực tập</span>
+            @break
+
+            @case('Bị từ chối')
+            <span class="text-red-600">Đơn đăng ký bị từ chối bởi doanh nghiệp</span>
+            @break
+
+            @default
+            <span class="text-gray-600">Chưa có thông tin thực tập</span>
+            @endswitch
+        </div>
+
         @php
         $trangThaiHienTai = $textTienDo ?? 'Chưa đăng ký';
         @endphp
 
-        <div class="flex justify-between items-center text-center text-sm">
+        <hr class="my-4 border-gray-400">
 
-            {{-- Bước 1: Chờ duyệt --}}
-            <div class="flex flex-col items-center w-1/4">
-                <div class="relative flex items-center justify-center mb-1">
-                    <div class="
-                    @if(in_array($trangThaiHienTai, ['Chờ duyệt','Đã duyệt','Thực tập','Hoàn thành']))
-                        bg-yellow-400
-                    @else
-                        bg-gray-300
-                    @endif
-                    text-white rounded-full p-3
-                ">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-                <p class="font-semibold text-gray-700">Chờ duyệt</p>
-                <p class="text-xs mt-1
-                @if($trangThaiHienTai == 'Chờ duyệt') text-blue-600
-                @elseif(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành'])) text-green-600
-                @else text-gray-500 @endif
-            ">
-                    <i class="fas fa-check-circle mr-1"></i>
-                    @if($trangThaiHienTai == 'Chờ duyệt')
-                    Đang chờ duyệt
-                    @elseif(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành']))
-                    Hoàn thành
-                    @else
-                    Chưa đến
-                    @endif
-                </p>
+        <!-- Timeline hiển thị tiến độ -->
+        <?php
+    // Màu theo trạng thái
+    $colors = [
+        'Chờ duyệt'   => '#F59E0B', // vàng
+        'Đã duyệt'    => '#1D4ED8', // xanh dương
+        'Thực tập'    => '#16A34A', // xanh lá
+        'Hoàn thành'  => '#4a7fa7', // tím
+    ];
+
+    // % tiến độ
+    $percentMap = [
+        'Chờ duyệt'  => 0,
+        'Đã duyệt'   => 33,
+        'Thực tập'   => 66,
+        'Hoàn thành' => 100,
+    ];
+
+    $percent = $percentMap[$trangThaiHienTai] ?? 0;
+    $activeColor = $colors[$trangThaiHienTai] ?? '#1D4ED8';
+
+    // Danh sách các bước
+    $steps = [
+        ['label' => 'Chờ duyệt',  'icon' => 'fa-clock'],
+        ['label' => 'Đã duyệt',   'icon' => 'fa-circle-check'],
+        ['label' => 'Thực tập',   'icon' => 'fa-briefcase'],
+        ['label' => 'Hoàn thành', 'icon' => 'fa-trophy'],
+    ];
+?>
+
+        <div class="relative w-full mt-10 mb-6">
+
+            <!-- Line background -->
+            <div class="absolute top-6 left-0 right-0 mx-auto w-full h-1 bg-gray-300 z-0"></div>
+
+            <!-- Progress Line -->
+            <div class="absolute top-6 left-0 h-1 transition-all z-10"
+                style="width: <?= $percent ?>%; background-color: <?= $activeColor ?>;">
             </div>
 
-            {{-- Bước 2: Đã duyệt --}}
-            <div class="flex flex-col items-center w-1/4">
-                <div class="relative flex items-center justify-center mb-1">
-                    <div class="
-                    @if(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành']))
-                        bg-green-500
-                    @else
-                        bg-gray-300
-                    @endif
-                    text-white rounded-full p-3
-                ">
-                        <i class="fas fa-check"></i>
-                    </div>
-                </div>
-                <p class="font-semibold text-gray-700">Đã duyệt</p>
-                <p class="text-xs mt-1
-                @if(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành'])) text-green-600
-                @else text-gray-500 @endif
-            ">
-                    <i class="fas fa-check-circle mr-1"></i>
-                    @if(in_array($trangThaiHienTai, ['Đã duyệt','Thực tập','Hoàn thành']))
-                    Hoàn thành
-                    @else
-                    Chưa đến
-                    @endif
-                </p>
-            </div>
+            <!-- Steps -->
+            <div class="flex justify-between items-center text-center text-sm relative z-20">
 
-            {{-- Bước 3: Đang thực tập --}}
-            <div class="flex flex-col items-center w-1/4">
-                <div class="relative flex items-center justify-center mb-1">
-                    <div class="
-                    @if($trangThaiHienTai == 'Thực tập')
-                        bg-sky-500 
-                    @elseif($trangThaiHienTai == 'Hoàn thành')
-                        bg-emerald-500
-                    @else
-                        bg-gray-300
-                    @endif
-                    text-white rounded-full p-3
-                ">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
-                </div>
-                <p class="font-semibold text-gray-700">Đang thực tập</p>
-                <p class="text-xs mt-1
-                @if($trangThaiHienTai == 'Thực tập') text-blue-600
-                @elseif($trangThaiHienTai == 'Hoàn thành') text-green-600
-                @else text-gray-500 @endif
-            ">
-                    <i class="fas fa-spinner mr-1 @if($trangThaiHienTai == 'Thực tập') animate-spin @endif"></i>
-                    @if($trangThaiHienTai == 'Thực tập')
-                    Đang thực hiện
-                    @elseif($trangThaiHienTai == 'Hoàn thành')
-                    Hoàn thành
-                    @else
-                    Chưa đến
-                    @endif
-                </p>
-            </div>
+                <?php foreach ($steps as $step): 
+            $isActive = array_search($step['label'], array_column($steps, 'label')) 
+                        <= array_search($trangThaiHienTai, array_column($steps, 'label'));
 
-            {{-- Bước 4: Hoàn thành --}}
-            <div class="flex flex-col items-center w-1/4">
-                <div class="relative flex items-center justify-center mb-1">
-                    <div class="
-                    @if($trangThaiHienTai == 'Hoàn thành')
-                        bg-green-600
-                    @else
-                        bg-gray-300
-                    @endif
-                    text-white rounded-full p-3
-                ">
-                        <i class="fas fa-trophy"></i>
+            $circleColor = $isActive ? $activeColor : '#9CA3AF';
+            $bgCircle = $isActive ? 'bg-gray-100' : 'bg-gray-200';
+            $textColor = $isActive ? $activeColor : '#9CA3AF';
+        ?>
+
+                <div class="flex flex-col items-center">
+                    <div class="rounded-full p-4 mb-2 <?= $bgCircle ?>">
+                        <i class="fa-solid <?= $step['icon'] ?> text-xl" style="color: <?= $circleColor ?>;"></i>
                     </div>
+                    <span style="color: <?= $textColor ?>;"><?= $step['label'] ?></span>
                 </div>
-                <p class="font-semibold text-gray-700">Hoàn thành</p>
-                <p class="text-xs mt-1
-                @if($trangThaiHienTai == 'Hoàn thành') text-green-600
-                @else text-gray-500 @endif
-            ">
-                    <i class="fas fa-check-circle mr-1"></i>
-                    @if($trangThaiHienTai == 'Hoàn thành')
-                    Hoàn thành
-                    @else
-                    Chưa đến
-                    @endif
-                </p>
+
+                <?php endforeach; ?>
+
             </div>
         </div>
+
+
+
     </div>
+
+
+    </div>
+
+
+
+
+
+
 </main>
 
 <!-- Modal xem vị trí -->
