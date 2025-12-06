@@ -21,7 +21,7 @@ public function index(Request $request)
     }
 
     // Sắp xếp user_id tăng dần
-    $users = $query->orderBy('user_id', 'asc')->paginate(5);
+    $users = $query->orderBy('user_id', 'asc')->paginate(10);
 
     $roles = Role::where('is_delete', 0)->get();
 
