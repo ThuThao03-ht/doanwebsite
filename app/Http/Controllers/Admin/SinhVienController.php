@@ -17,82 +17,165 @@ use App\Imports\SinhVienImport;
 
 class SinhVienController extends Controller
 {
+
+
+private function taoMaSV()
+{
+    // Lấy số lớn nhất từ tất cả bản ghi, kể cả is_delete = 1
+    $maxNumber = SinhVien::selectRaw("MAX(CAST(SUBSTRING(ma_sv, 3) AS UNSIGNED)) AS max_number")
+        ->value('max_number');
+
+    // Nếu chưa có sinh viên nào thì bắt đầu từ 1
+    $newNumber = $maxNumber ? $maxNumber + 1 : 1;
+
+    // Tạo mã SV dạng SV001
+    return 'SV' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+}
+
     /**
      * Hiển thị danh sách sinh viên
      */
-  public function index()
+//   public function index()
+// {
+//     $sinhviens = SinhVien::where('is_delete', 0) ->with('user')
+//     ->paginate(10); // hiển thị 10 sinh viên mỗi trang
+
+//     // Lấy mã SV tiếp theo
+//     $lastSV = SinhVien::where('is_delete', 0)->orderBy('ma_sv', 'desc')->first();
+//     $nextMaSV = $lastSV ? 'SV' . str_pad(intval(substr($lastSV->ma_sv, 2)) + 1, 3, '0', STR_PAD_LEFT) : 'SV001';
+
+//     // Lấy danh sách ngành có sinh viên
+//     $dsNganh = SinhVien::where('is_delete', 0)
+//         ->distinct()
+//         ->pluck('nganh')
+//         ->filter() // loại bỏ null/empty
+//         ->values(); // reset key
+
+//     return view('admin.sinhvien', compact('sinhviens', 'nextMaSV', 'dsNganh'));
+// }
+
+public function index()
 {
-    $sinhviens = SinhVien::where('is_delete', 0) ->with('user')
-    ->paginate(10); // hiển thị 10 sinh viên mỗi trang
+    $sinhviens = SinhVien::where('is_delete', 0)
+        ->with('user')
+        ->paginate(10);
 
-    // Lấy mã SV tiếp theo
-    $lastSV = SinhVien::where('is_delete', 0)->orderBy('ma_sv', 'desc')->first();
-    $nextMaSV = $lastSV ? 'SV' . str_pad(intval(substr($lastSV->ma_sv, 2)) + 1, 3, '0', STR_PAD_LEFT) : 'SV001';
+    // Tạo mã SV tự động
+    $nextMaSV = $this->taoMaSV();
 
-    // Lấy danh sách ngành có sinh viên
     $dsNganh = SinhVien::where('is_delete', 0)
         ->distinct()
         ->pluck('nganh')
-        ->filter() // loại bỏ null/empty
-        ->values(); // reset key
+        ->filter()
+        ->values();
 
     return view('admin.sinhvien', compact('sinhviens', 'nextMaSV', 'dsNganh'));
 }
 
-
     /**
      * Lưu sinh viên mới
      */
-    public function store(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            // Validate trước khi tạo dữ liệu
-            $request->validate([
-    'ma_sv' => 'required|unique:sinhvien,ma_sv',
-    'ho_ten' => 'required|string|max:100',
-    'email' => 'required|email|unique:sinhvien,email',
-    'sdt' => [
-        'nullable',
-        'regex:/^\d{10}$/'
-    ],
-    'lop' => 'nullable|string|max:50',
-    'nganh' => 'nullable|string|max:100'
-], [
-    'sdt.regex' => 'Số điện thoại phải đúng 10 chữ số và không chứa ký tự đặc biệt.',
-]);
+//     public function store(Request $request)
+//     {
+//         DB::beginTransaction();
+//         try {
+//             // Validate trước khi tạo dữ liệu
+//             $request->validate([
+//     'ma_sv' => 'required|unique:sinhvien,ma_sv',
+//     'ho_ten' => 'required|string|max:100',
+//     'email' => 'required|email|unique:sinhvien,email',
+//     'sdt' => [
+//         'nullable',
+//         'regex:/^\d{10}$/'
+//     ],
+//     'lop' => 'nullable|string|max:50',
+//     'nganh' => 'nullable|string|max:100'
+// ], [
+//     'sdt.regex' => 'Số điện thoại phải đúng 10 chữ số và không chứa ký tự đặc biệt.',
+// ]);
 
 
-            // Tạo user
-            $user = User::create([
-                'username' => $request->ma_sv,
-                'password_hash' => Hash::make('123456'),
-                'role_id' => 2,
-                'nguoi_tao_id' => 1,
-                'mat_khau_moi' => 1,
-                'status' => 'active'
-            ]);
+//             // Tạo user
+//             $user = User::create([
+//                 'username' => $request->ma_sv,
+//                 'password_hash' => Hash::make('123456'),
+//                 'role_id' => 2,
+//                 'nguoi_tao_id' => 1,
+//                 'mat_khau_moi' => 1,
+//                 'status' => 'active'
+//             ]);
 
-            // Tạo sinh viên
-            SinhVien::create([
-                'ma_sv' => $request->ma_sv,
-                'ho_ten' => $request->ho_ten,
-                'lop' => $request->lop,
-                'nganh' => $request->nganh,
-                'email' => $request->email,
-                'sdt' => $request->sdt,
-                'user_id' => $user->user_id
-            ]);
+//             // Tạo sinh viên
+//             SinhVien::create([
+//                 'ma_sv' => $request->ma_sv,
+//                 'ho_ten' => $request->ho_ten,
+//                 'lop' => $request->lop,
+//                 'nganh' => $request->nganh,
+//                 'email' => $request->email,
+//                 'sdt' => $request->sdt,
+//                 'user_id' => $user->user_id
+//             ]);
 
-            DB::commit();
+//             DB::commit();
 
-            return redirect()->route('admin.sinhvien.index')->with('success', 'Thêm sinh viên thành công');
+//             return redirect()->route('admin.sinhvien.index')->with('success', 'Thêm sinh viên thành công');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())->withInput();
-        }
+//         } catch (\Exception $e) {
+//             DB::rollBack();
+//             return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())->withInput();
+//         }
+//     }
+
+
+public function store(Request $request)
+{
+    DB::beginTransaction();
+    try {
+        // Tạo mã SV mới
+        $newMaSV = $this->taoMaSV();
+
+        $request->validate([
+            'ho_ten' => 'required|string|max:100',
+            'email' => 'required|email|unique:sinhvien,email',
+            'sdt' => ['nullable', 'regex:/^\d{10}$/'],
+            'lop' => 'nullable|string|max:50',
+            'nganh' => 'nullable|string|max:100'
+        ]);
+
+        // Tạo tài khoản user
+   
+        $user = User::create([
+            'username' => $newMaSV,
+            'password_hash' => Hash::make('123456'),
+            'role_id' => 2,
+            'nguoi_tao_id' => 1,
+            'mat_khau_moi' => 1,
+            'status' => 'active'
+        ]);
+        // Tạo sinh viên
+        SinhVien::create([
+            'ma_sv'   => $newMaSV,
+            'ho_ten'  => $request->ho_ten,
+            'lop'     => $request->lop,
+            'nganh'   => $request->nganh,
+            'email'   => $request->email,
+            'sdt'     => $request->sdt,
+            'user_id' => $user->user_id
+        ]);
+
+        DB::commit();
+
+        return redirect()->route('admin.sinhvien.index')
+            ->with('success', 'Thêm sinh viên thành công');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+            ->withInput();
     }
+}
+
 
     /**
      * Cập nhật sinh viên
