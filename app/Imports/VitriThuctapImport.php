@@ -17,14 +17,24 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
 {
     use Importable, SkipsFailures;
 
+    // Hàm tạo mã vị trí
+    private function taoMaViTri()
+    {
+        $last = VitriThuctap::orderBy('ma_vitri', 'desc')->first();
+        if (!$last) return 'VT0001';
+
+        $num = intval(substr($last->ma_vitri, 2)) + 1;
+        return 'VT' . str_pad($num, 4, '0', STR_PAD_LEFT);
+    }
+
     public function model(array $row)
     {
         $dnValue = $row['dn_id'] ?? null;
 
-        // Nếu không có dn_id
+        // Không có DN
         if (!$dnValue) {
             $this->failures[] = new Failure(
-                0, // dùng 0 thay vì null để tránh lỗi
+                0,
                 'dn_id',
                 ["Cột 'Doanh nghiệp' không được để trống."],
                 $row
@@ -32,11 +42,10 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
             return null;
         }
 
-        // Nếu người dùng nhập tên doanh nghiệp thay vì ID
+        // Cho phép nhập tên doanh nghiệp hoặc ID
         if (!is_numeric($dnValue)) {
             $dn = DoanhNghiep::where('ten_dn', trim($dnValue))->first();
             if (!$dn) {
-                Log::warning("Import lỗi: Doanh nghiệp '{$dnValue}' không tồn tại.", $row);
                 $this->failures[] = new Failure(
                     0,
                     'dn_id',
@@ -47,10 +56,8 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
             }
             $dn_id = $dn->dn_id;
         } else {
-            // Nếu nhập mã doanh nghiệp (số ID)
             $dn = DoanhNghiep::find($dnValue);
             if (!$dn) {
-                Log::warning("Import lỗi: Mã doanh nghiệp '{$dnValue}' không tồn tại.", $row);
                 $this->failures[] = new Failure(
                     0,
                     'dn_id',
@@ -62,15 +69,33 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
             $dn_id = $dnValue;
         }
 
-        // Tạo bản ghi mới
+        // 🔥 KIỂM TRA TRÙNG TEN_VITRI + DN_ID
+        $exists = VitriThuctap::where('dn_id', $dn_id)
+            ->where('ten_vitri', trim($row['ten_vitri']))
+            ->where('is_delete', 0)
+            ->exists();
+
+        if ($exists) {
+            $this->failures[] = new Failure(
+                0,
+                'ten_vitri',
+                ["Tên vị trí '{$row['ten_vitri']}' đã tồn tại trong doanh nghiệp này."],
+                $row
+            );
+            return null;
+        }
+
+        // Tạo mã vị trí tự động
+        $ma_vitri = $this->taoMaViTri();
+
         return new VitriThuctap([
             'dn_id' => $dn_id,
-            'ma_vitri' => $row['ma_vitri'],
+            'ma_vitri' => $ma_vitri,
             'ten_vitri' => $row['ten_vitri'],
             'mo_ta' => $row['mo_ta'] ?? null,
             'yeu_cau' => $row['yeu_cau'] ?? null,
             'soluong' => $row['soluong'] ?? 1,
-            'so_luong_da_dangky' => $row['so_luong_da_dangky'] ?? 0,
+            'so_luong_da_dangky' => 0,
             'trang_thai' => $row['trang_thai'] ?? 'con_han',
         ]);
     }
@@ -79,7 +104,6 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
     {
         return [
             '*.dn_id' => 'required',
-            '*.ma_vitri' => 'required|unique:vitri_thuctap,ma_vitri',
             '*.ten_vitri' => 'required',
             '*.soluong' => 'required|integer|min:1',
         ];
@@ -89,8 +113,6 @@ class VitriThuctapImport implements ToModel, WithHeadingRow, WithValidation, Ski
     {
         return [
             '*.dn_id.required' => "Cột 'Doanh nghiệp' không được để trống.",
-            '*.ma_vitri.required' => "Cột 'Mã vị trí' là bắt buộc.",
-            '*.ma_vitri.unique' => "Mã vị trí này đã tồn tại trong hệ thống.",
             '*.ten_vitri.required' => "Cột 'Tên vị trí' là bắt buộc.",
             '*.soluong.required' => "Cột 'Số lượng' là bắt buộc.",
             '*.soluong.integer' => "Cột 'Số lượng' phải là số nguyên.",
