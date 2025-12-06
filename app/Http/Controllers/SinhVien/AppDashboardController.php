@@ -108,15 +108,25 @@ $thongBaoList = ThongBaoUser::join('thongbao', 'thongbao.tb_id', '=', 'thongbao_
         //     'dangKyList'        => $dangKyList,
         //     'thongBaoList'      => $thongBaoList,
         // ]);
-         $latestDangKy = $dangKyList->first();
-        $phanTramTienDo = $this->tinhPhanTramTienDo($latestDangKy->trang_thai ?? null);
-        // $mauTienDo = $this->getColorByProgress($phanTramTienDo);
-        // $textTienDo = $this->getProgressText($phanTramTienDo);
-        $mauTienDo = $this->getColorByProgress($phanTramTienDo, $latestDangKy->trang_thai ?? null);
+        
+        // $phanTramTienDo = $this->tinhPhanTramTienDo($latestDangKy->trang_thai ?? null);
+        // // $mauTienDo = $this->getColorByProgress($phanTramTienDo);
+        // // $textTienDo = $this->getProgressText($phanTramTienDo);
+        // $mauTienDo = $this->getColorByProgress($phanTramTienDo, $latestDangKy->trang_thai ?? null);
 
-        $textTienDo = $this->getProgressText($phanTramTienDo, $latestDangKy->trang_thai ?? null);
+        // $textTienDo = $this->getProgressText($phanTramTienDo, $latestDangKy->trang_thai ?? null);
+
+        // $latestDangKy = $dangKyList->first();
+
 
         $latestDangKy = $dangKyList->first();
+
+$trangThai = $latestDangKy->trang_thai ?? null;
+
+$phanTramTienDo = $this->tinhPhanTramTienDo($trangThai);
+$mauTienDo = $this->getColorByProgress($phanTramTienDo, $trangThai);
+$textTienDo = $this->getProgressText($phanTramTienDo, $trangThai);
+
         return view('sinhvien.dashboard', [
             'countViTriMo'      => $countViTriMo,
             'countDangKy'       => $countDangKy,
