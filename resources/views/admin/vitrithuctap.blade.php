@@ -62,7 +62,7 @@
             <i class="bi bi-list-ul me-2"></i> Danh sách vị trí thực tập
         </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-center">
+            <table class="table table-hover mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
@@ -79,15 +79,15 @@
                 <tbody>
                     @foreach($vitrithuctaps as $vt)
                     <tr id="row-{{ $vt->vitri_id }}">
-                        <td>{{ $vt->vitri_id }}</td>
-                        <td>{{ $vt->doanhnghiep->ten_dn ?? '' }}</td>
-                        <td>{{ $vt->ma_vitri }}</td>
-                        <td>{{ $vt->ten_vitri }}</td>
+                        <td class="text-center">{{ $vt->vitri_id }}</td>
+                        <td class="text-start">{{ $vt->doanhnghiep->ten_dn ?? '' }}</td>
+                        <td class="text-start">{{ $vt->ma_vitri }}</td>
+                        <td class="text-start">{{ $vt->ten_vitri }}</td>
 
-                        <td>{{ $vt->soluong }}</td>
-                        <td>{{ $vt->so_luong_da_dangky ?? 0 }}</td>
-                        <td>{{ $vt->trang_thai }}</td>
-                        <td>
+                        <td class="text-center">{{ $vt->soluong }}</td>
+                        <td class="text-center">{{ $vt->so_luong_da_dangky ?? 0 }}</td>
+                        <td class="text-center">{{ $vt->trang_thai }}</td>
+                        <td class="text-center">
                             <button class="btn btn-sm btn-info text-white" data-bs-toggle="modal"
                                 data-bs-target="#modalView{{ $vt->vitri_id }}"><i class="bi bi-eye"></i></button>
 
@@ -486,6 +486,18 @@ if (importSuccess) {
 
 .pagination .page-link:focus {
     box-shadow: none;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.table td.text-start {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
 }
 </style>
 @endsection

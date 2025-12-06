@@ -60,12 +60,16 @@
             </h3>
 
             <ul>
+                @if($thongbaos->isEmpty())
+                <li class="text-gray-500 text-sm py-2 text-center">
+                    Chưa có thông báo nào.
+                </li>
+                @else
                 @foreach($thongbaos as $tb)
                 <li class="flex justify-between items-center border-b py-2 hover:bg-gray-50 transition duration-200">
                     <span
                         class="flex items-center space-x-2 {{ $tb->da_doc ? 'text-gray-500' : 'font-semibold text-gray-800' }}">
                         @if(!$tb->da_doc)
-                        <!-- Icon chấm đỏ cho thông báo mới -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-red-500" fill="currentColor"
                             viewBox="0 0 8 8">
                             <circle cx="4" cy="4" r="4" />
@@ -76,7 +80,6 @@
                         </a>
                     </span>
 
-                    <!-- Nhãn thông báo -->
                     @if($tb->da_doc)
                     <span class="px-2 py-0.5 bg-gray-300 text-gray-700 text-xs rounded-full">Đã đọc</span>
                     @else
@@ -84,7 +87,9 @@
                     @endif
                 </li>
                 @endforeach
+                @endif
             </ul>
+
 
 
 
@@ -95,6 +100,11 @@
             <h3 class="text-xl font-semibold mb-4">Sinh viên mới</h3>
 
             <ul>
+                @if($sinhviens->isEmpty())
+                <li class="text-gray-500 text-sm py-2 text-center">
+                    Chưa có sinh viên đăng ký thực tập.
+                </li>
+                @else
                 @foreach($sinhviens as $index => $sv)
                 <li class="flex flex-col border-b py-2 hover:bg-gray-50 transition duration-200 mb-2"
                     x-show="showAll || {{ $index }} < 1" x-cloak>
@@ -107,16 +117,17 @@
                             </div>
                             <span>{{ $sv->ma_sv }} - {{ $sv->ho_ten }}</span>
                         </div>
+
                         <span class="px-2 py-0.5 rounded-full text-xs 
-                                {{ $sv->trang_thai == 'cho_duyet' ? 'bg-yellow-200 text-yellow-800' : '' }}
-                                {{ $sv->trang_thai == 'da_duyet' ? 'bg-green-200 text-green-800' : '' }}
-                                {{ $sv->trang_thai == 'tu_choi' ? 'bg-red-200 text-red-800' : '' }}
-                                {{ $sv->trang_thai == 'dang_thuctap' ? 'bg-blue-200 text-blue-800' : '' }}
-                                {{ $sv->trang_thai == 'hoan_thanh' ? 'bg-gray-200 text-gray-800' : '' }}">
+                        {{ $sv->trang_thai == 'cho_duyet' ? 'bg-yellow-200 text-yellow-800' : '' }}
+                        {{ $sv->trang_thai == 'da_duyet' ? 'bg-green-200 text-green-800' : '' }}
+                        {{ $sv->trang_thai == 'tu_choi' ? 'bg-red-200 text-red-800' : '' }}
+                        {{ $sv->trang_thai == 'dang_thuctap' ? 'bg-blue-200 text-blue-800' : '' }}
+                        {{ $sv->trang_thai == 'hoan_thanh' ? 'bg-gray-200 text-gray-800' : '' }}">
                             {{ $sv->trang_thai }}
                         </span>
                     </div>
-                    <!-- Thông tin vị trí -->
+
                     <div class="ml-13 mt-1 text-sm text-gray-600">
                         <p><strong>Vị trí:</strong> {{ $sv->ten_vitri }}</p>
                         <p><strong>Mô tả:</strong> {{ $sv->mo_ta }}</p>
@@ -125,10 +136,13 @@
                     </div>
                 </li>
                 @endforeach
+                @endif
             </ul>
 
+
             <!-- Nút xem thêm / thu gọn -->
-            @if(count($sinhviens) > 1)
+            @if($sinhviens->count() > 1)
+
             <button @click="showAll = !showAll" class="mt-2 text-blue-500 hover:text-blue-700 font-semibold text-sm">
                 <span x-text="showAll ? 'Thu gọn' : 'Xem thêm'"></span>
             </button>

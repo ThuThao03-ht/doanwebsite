@@ -284,14 +284,15 @@
 
                 <p class="text-gray-600 flex items-center mt-1">
                     <i class="fa-solid fa-building mr-2" style="color: #4a7fa7;"></i>
-                    {{ $latestDangKy->viTriThucTap->doanhNghiep->ten_dn ?? '---' }}
+                    {{ $latestDangKy->viTriThucTap->doanhNghiep->ten_dn ?? 'Chưa có đăng ký ' }}
                 </p>
 
                 <p class="text-gray-600 flex items-center mt-1">
                     <i class="fa-solid fa-calendar-days mr-2"></i>
-                    Đăng ký: {{ $latestDangKy->created_at ? $latestDangKy->created_at->format('d/m/Y') : '---' }}
+                    Đăng ký: {{ $latestDangKy->created_at ?? 'Chưa có đăng ký' }}
                 </p>
             </div>
+
 
             <!-- Phần trăm -->
             <div class="bg-red-100 text-red-600 font-bold text-lg px-3 py-1 rounded-xl inline-block">
@@ -412,10 +413,10 @@
         <div class="relative w-full mt-10 mb-6">
 
             <!-- Line background -->
-            <div class="absolute top-6 left-0 right-0 mx-auto w-full h-1 bg-gray-300 z-0"></div>
+            <div class="absolute top-10 left-0 right-0 mx-auto w-full h-1 bg-gray-300 z-0"></div>
 
             <!-- Progress Line -->
-            <div class="absolute top-6 left-0 h-1 transition-all z-10"
+            <div class="absolute top-10 left-0 h-1 transition-all z-10"
                 style="width: <?= $percent ?>%; background-color: <?= $activeColor ?>;">
             </div>
 
@@ -432,7 +433,9 @@
         ?>
 
                 <div class="flex flex-col items-center">
-                    <div class="rounded-full p-4 mb-2 <?= $bgCircle ?>">
+                    <div class="rounded-full w-20 h-20 flex items-center justify-center mb-2 <?= $bgCircle ?>">
+
+                        <!-- <div class="rounded-full p-4 mb-2 <?= $bgCircle ?>"> -->
                         <i class="fa-solid <?= $step['icon'] ?> text-xl" style="color: <?= $circleColor ?>;"></i>
                     </div>
                     <span style="color: <?= $textColor ?>;"><?= $step['label'] ?></span>

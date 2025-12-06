@@ -299,37 +299,53 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 .table {
     width: 100%;
-    table-layout: fixed;
-    /* Giữ cột thẳng hàng, không bị giãn bất thường */
     border-collapse: collapse;
 }
 
+/* default: cho phép wrap */
 .table th,
 .table td {
     vertical-align: middle;
+    padding: 10px 12px;
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Cột ID */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 8%;
     text-align: center;
     white-space: nowrap;
-    padding: 10px 12px;
 }
 
-/* Căn trái riêng cho cột Username và Role */
-.table td:nth-child(2),
+/* Username */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 40%;
+}
+
+/* Role */
+.table th:nth-child(3),
 .table td:nth-child(3) {
-    text-align: left;
+    width: 25%;
 }
 
-/* Căn giữa cho cột trạng thái và hành động */
-.table td:nth-child(4),
-.table td:nth-child(5),
+/* Trạng thái + Hành động */
 .table th:nth-child(4),
-.table th:nth-child(5) {
+.table td:nth-child(4),
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 13%;
     text-align: center;
+    white-space: nowrap;
 }
 
-/* Màu nền tiêu đề */
-.table thead th {
-    background-color: #f8f9fa;
-    font-weight: 600;
+/* Hover đẹp */
+.table-hover tbody tr:hover {
+    background-color: rgba(74, 127, 167, 0.1);
+    transition: background-color 0.3s;
 }
 
 /* Giữ badge và icon không bị lệch */

@@ -67,42 +67,47 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
-                        <th>Mã SV</th>
-                        <th>Họ Tên</th>
-                        <th>Lớp</th>
-                        <th>Ngành</th>
-                        <th>Email</th>
-                        <th>SĐT</th>
-                        <!-- <th>Username</th> -->
-                        <th class="text-center">Hành động</th>
+                        <th style="width:40px">#</th>
+                        <th style="width:90px">Mã SV</th>
+                        <th style="width:180px">Họ Tên</th>
+                        <th style="width:90px">Lớp</th>
+                        <th style="width:150px">Ngành</th>
+                        <th style="width:200px">Email</th>
+                        <th style="width:120px">SĐT</th>
+                        <th class="text-center" style="width:120px">Hành động</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach($sinhviens as $index => $sv)
                     <tr>
                         <td>{{ $sinhviens->firstItem() + $index }}</td>
-                        <td>{{ $sv->ma_sv }}</td>
+                        <td class="text-center">{{ $sv->ma_sv }}</td>
                         <td>{{ $sv->ho_ten }}</td>
-                        <td>{{ $sv->lop }}</td>
+                        <td class="text-center">{{ $sv->lop }}</td>
                         <td class="nganh-cell">{{ $sv->nganh }}</td>
-                        <td>{{ $sv->email }}</td>
-                        <td>{{ $sv->sdt }}</td>
+                        <td class="text-center">{{ $sv->email }}</td>
+                        <td class="text-center">{{ $sv->sdt }}</td>
                         <!-- <td>{{ $sv->user ? $sv->user->username : '-' }}</td> -->
-                        <td class="text-center d-flex justify-content-center align-items-center gap-2">
-                            <button class="btn btn-sm border-0" style="color: #0dcaf0; background: #e6f9fd;"
-                                data-bs-toggle="modal" data-bs-target="#modalView{{ $sv->sv_id }}" title="Xem">
-                                <i class="bi bi-eye-fill"></i>
-                            </button>
-                            <button class="btn btn-sm border-0" style="color: #ffc107; background: #fff8e1;"
-                                data-bs-toggle="modal" data-bs-target="#modalEdit{{ $sv->sv_id }}" title="Sửa">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                            <button class="btn btn-sm border-0 delete-btn" style="color: #dc3545; background: #fde8e8;"
-                                data-id="{{ $sv->sv_id }}" data-name="{{ $sv->ho_ten }}" title="Xóa">
-                                <i class="bi bi-trash3-fill"></i>
-                            </button>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-sm border-0" style="color:#0dcaf0; background:#e6f9fd"
+                                    data-bs-toggle="modal" data-bs-target="#modalView{{ $sv->sv_id }}" title="Xem">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+
+                                <button class="btn btn-sm border-0" style="color:#ffc107; background:#fff8e1"
+                                    data-bs-toggle="modal" data-bs-target="#modalEdit{{ $sv->sv_id }}" title="Sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                <button class="btn btn-sm border-0 delete-btn" style="color:#dc3545; background:#fde8e8"
+                                    data-id="{{ $sv->sv_id }}" data-name="{{ $sv->ho_ten }}" title="Xóa">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
                         </td>
+
 
                     </tr>
 
@@ -837,6 +842,20 @@
 
     .table th:nth-child(8) {
         width: 10%;
+    }
+
+    .table td,
+    .table th {
+        white-space: nowrap;
+    }
+
+    .table thead th {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .table td {
+        font-size: 14px;
     }
     </style>
     <input type="hidden" id="importError" value="{{ session('import_error') }}">
