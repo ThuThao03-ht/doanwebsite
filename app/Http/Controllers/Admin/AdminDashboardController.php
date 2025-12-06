@@ -32,23 +32,31 @@ class AdminDashboardController extends Controller
         // Thống kê tổng giảng viên
         $totalGiangVien = \App\Models\GiangVien::where('is_delete', 0)->count();
 
-        // --- BIỂU ĐỒ SINH VIÊN ĐĂNG KÝ THEO LỚP ---
+       // --- BIỂU ĐỒ SINH VIÊN ĐĂNG KÝ THEO LỚP ---
         $chart_sv_data = SinhVien::selectRaw('lop, COUNT(*) as tong_sv')
             ->where('is_delete', 0)
             ->groupBy('lop')
             ->get();
 
-        $chart_sv_dk_data = SinhVien::selectRaw('lop, COUNT(dk.dk_id) as so_sv_dk')
-            ->join('dangky_thuctap as dk', 'sinhvien.sv_id', '=', 'dk.sv_id')
+        $chart_sv_dk_data = DangKyThucTap::selectRaw('sinhvien.lop, COUNT(*) as so_sv_dk')
+            ->join('sinhvien', 'dangky_thuctap.sv_id', '=', 'sinhvien.sv_id')
+            ->where('dangky_thuctap.is_delete', 0)
             ->where('sinhvien.is_delete', 0)
-            ->where('dk.is_delete', 0)
-            ->groupBy('lop')
+            ->groupBy('sinhvien.lop')
             ->get();
 
+        // Lấy danh sách lớp
         $svLabels = $chart_sv_data->pluck('lop')->toArray();
         $svTotal = $chart_sv_data->pluck('tong_sv')->toArray();
-        $svDK = $chart_sv_dk_data->pluck('so_sv_dk')->toArray();
 
+        // Map số SV đã đăng ký theo label
+        $svDK = [];
+        foreach ($svLabels as $lop) {
+            $value = $chart_sv_dk_data->firstWhere('lop', $lop);
+            $svDK[] = $value ? $value->so_sv_dk : 0;
+        }
+
+        // Chart
         $chart_sv = new Chart;
         $chart_sv->labels($svLabels);
         $chart_sv->dataset('Tổng SV', 'bar', $svTotal)->backgroundColor('#4A7FA7');
