@@ -17,7 +17,8 @@ class VitriThuctapController extends Controller
 {
     $last = VitriThuctap::orderBy('vitri_id','desc')->first();
     $num = $last ? (int) substr($last->ma_vitri, 2) + 1 : 1;
-    $ma_vitri = 'VT'.str_pad($num, 4, '0', STR_PAD_LEFT);
+    // $ma_vitri = 'VT'.str_pad($num, 4, '0', STR_PAD_LEFT);
+    $ma_vitri = $this->taoMaViTri();
 
     $query = VitriThuctap::where('is_delete', 0);
 
@@ -43,12 +44,30 @@ class VitriThuctapController extends Controller
 
     // Thêm mới
   // Thêm mới
+// public function store(Request $request)
+// {
+//     // Sinh ma_vitri tự động
+//     $last = VitriThuctap::orderBy('vitri_id','desc')->first();
+//     $num = $last ? (int) substr($last->ma_vitri, 2) + 1 : 1;
+//     $ma_vitri = 'VT'.str_pad($num, 4, '0', STR_PAD_LEFT);
+
+//     VitriThuctap::create([
+//         'dn_id' => $request->dn_id,
+//         'ma_vitri' => $ma_vitri,
+//         'ten_vitri' => $request->ten_vitri,
+//         'mo_ta' => $request->mo_ta,
+//         'yeu_cau' => $request->yeu_cau,
+//         'soluong' => $request->soluong ?? 1,
+//         'so_luong_da_dangky' => $request->so_luong_da_dangky ?? 0,
+//         'trang_thai' => $request->trang_thai ?? 'con_han'
+//     ]);
+
+//     return redirect()->route('admin.vitrithuctap.index')->with('success','Thêm vị trí thực tập thành công!');
+// }
+
 public function store(Request $request)
 {
-    // Sinh ma_vitri tự động
-    $last = VitriThuctap::orderBy('vitri_id','desc')->first();
-    $num = $last ? (int) substr($last->ma_vitri, 2) + 1 : 1;
-    $ma_vitri = 'VT'.str_pad($num, 4, '0', STR_PAD_LEFT);
+    $ma_vitri = $this->taoMaViTri();
 
     VitriThuctap::create([
         'dn_id' => $request->dn_id,
@@ -57,12 +76,14 @@ public function store(Request $request)
         'mo_ta' => $request->mo_ta,
         'yeu_cau' => $request->yeu_cau,
         'soluong' => $request->soluong ?? 1,
-        'so_luong_da_dangky' => $request->so_luong_da_dangky ?? 0,
+        'so_luong_da_dangky' => 0,
         'trang_thai' => $request->trang_thai ?? 'con_han'
     ]);
 
-    return redirect()->route('admin.vitrithuctap.index')->with('success','Thêm vị trí thực tập thành công!');
+    return redirect()->route('admin.vitrithuctap.index')
+        ->with('success','Thêm vị trí thực tập thành công!');
 }
+
 
 // Sửa
 public function update(Request $request, $id)
@@ -166,6 +187,18 @@ public function export(Request $request)
 }
 
 
+private function taoMaViTri()
+{
+    $last = VitriThuctap::orderBy('ma_vitri', 'desc')->first();
+
+    if (!$last) {
+        return 'VT0001';
+    }
+
+    $number = intval(substr($last->ma_vitri, 2)) + 1;
+
+    return 'VT' . str_pad($number, 4, '0', STR_PAD_LEFT);
+}
 
 
 
