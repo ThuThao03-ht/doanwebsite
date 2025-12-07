@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 
 class HoSoSVController extends Controller
 {
-    // 🧭 Trang xem hồ sơ sinh viên
+    //  Trang xem hồ sơ sinh viên
     public function index()
     {
         $user = Auth::user();
@@ -25,7 +25,7 @@ class HoSoSVController extends Controller
         return view('sinhvien.hososv', compact('user', 'roleName', 'thongtin'));
     }
 
-    // ✏️ Cập nhật thông tin hồ sơ
+    //  Cập nhật thông tin hồ sơ
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -52,7 +52,7 @@ class HoSoSVController extends Controller
         return redirect()->back()->with('success', 'Cập nhật thông tin hồ sơ thành công!');
     }
 
-    // 🖼️ Cập nhật ảnh đại diện
+    // Cập nhật ảnh đại diện
 //   public function updateAvatar(Request $request)
 // {
 //     $user = Auth::user();
@@ -100,7 +100,7 @@ class HoSoSVController extends Controller
 //     return redirect()->back()->with('success', 'Cập nhật ảnh đại diện thành công!');
 // }
 
-// 🖼️ Cập nhật ảnh đại diện
+//  Cập nhật ảnh đại diện
 public function updateAvatar(Request $request)
 {
     $user = Auth::user();
@@ -197,7 +197,7 @@ public function showDoiMatKhauForm()
     $request->session()->regenerateToken();
 
     // Chuyển hướng về trang đăng nhập
-    return redirect('/login')->with('success', 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+    return redirect('/login')->with('success', '');
 }
 
 }

@@ -86,7 +86,7 @@ $thongBaoList = ThongBaoUser::join('thongbao', 'thongbao.tb_id', '=', 'thongbao_
     ->where('thongbao.is_delete', 0)
     ->whereIn('thongbao.doi_tuong', ['tat_ca', 'sinhvien'])
     ->orderBy('thongbao.ngay_gui', 'desc')
-    ->take(5)
+    ->take(2)
     ->get([
         'thongbao.tb_id',          
         'thongbao.tieude',

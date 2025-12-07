@@ -13,31 +13,20 @@ use Illuminate\Support\Facades\DB;
 class ThongBaoController extends Controller
 {
     // Hiển thị danh sách thông báo
-    public function index()
-    {
-        $thongbaos = ThongBao::where('is_delete', 0)->orderBy('ngay_gui', 'desc')->get();
-        return view('admin.thongbao', compact('thongbaos'));
+   public function index(Request $request)
+{
+    $query = ThongBao::where('is_delete', 0);
+
+    // Nếu có filter đối tượng
+    if ($request->filled('doi_tuong') && $request->doi_tuong != 'all') {
+        $query->where('doi_tuong', $request->doi_tuong);
     }
 
-    // Thêm thông báo
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'tieude' => 'required|string|max:150',
-    //         'noidung' => 'required|string',
-    //         'doi_tuong' => 'required|in:tat_ca,sinhvien,giangvien,doanhnghiep',
-    //     ]);
+    // Sắp xếp + phân trang (5 bản ghi)
+    $thongbaos = $query->orderBy('ngay_gui', 'desc')->paginate(5);
 
-    //     ThongBao::create([
-    //         'tieude' => $request->tieude,
-    //         'noidung' => $request->noidung,
-    //         'doi_tuong' => $request->doi_tuong,
-    //         'nguoi_gui_id' => 1,
-    //         'ngay_gui' => now(),
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Tạo thông báo thành công!');
-    // }
+    return view('admin.thongbao', compact('thongbaos'));
+}
 
 
     public function store(Request $request)
