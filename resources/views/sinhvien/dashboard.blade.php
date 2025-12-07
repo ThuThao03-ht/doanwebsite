@@ -158,6 +158,16 @@
             @empty
             <p class="text-sm text-gray-500 text-center">Không có thông báo mới</p>
             @endforelse
+
+            @if($thongBaoList->count() > 0)
+            <div class="text-right mt-3">
+                <a href="{{ route('sinhvien.thongbao.danhsach') }}"
+                    class="text-sm text-[#4A7FA7] font-medium hover:underline">
+                    Xem tất cả
+                </a>
+            </div>
+            @endif
+
         </section>
 
 
@@ -224,7 +234,8 @@
                                     <input type="hidden" name="vitri_id" value="{{ $vt->vitri_id }}">
                                     <button type="submit"
                                         class="bg-[#4A7FA7] hover:bg-[#3a6a8d] text-white px-3 py-1 rounded-md text-sm">
-                                        <i class="fas fa-check"></i> Đăng ký
+                                        <!-- <i class="fas fa-check"></i> -->
+                                        Đăng ký
                                     </button>
                                 </form>
                             </td>
@@ -289,8 +300,14 @@
 
                 <p class="text-gray-600 flex items-center mt-1">
                     <i class="fa-solid fa-calendar-days mr-2"></i>
-                    Đăng ký: {{ $latestDangKy->created_at ?? 'Chưa có đăng ký' }}
+                    Đăng ký:
+                    @if($latestDangKy)
+                    {{ \Carbon\Carbon::parse($latestDangKy->created_at)->format('d/m/Y') }}
+                    @else
+                    Chưa có đăng ký
+                    @endif
                 </p>
+
             </div>
 
 

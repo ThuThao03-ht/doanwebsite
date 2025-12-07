@@ -8,19 +8,41 @@
 @section('content')
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <!-- Tiêu đề -->
+        <!-- Title -->
         <h3 class="fw-bold mb-0" style="color:#4a7fa7;">
             <i class="bi bi-bell-fill"></i> Quản lý thông báo
         </h3>
 
-        <!-- Button tạo thông báo -->
-        <button type="button" class="btn" style="background-color:#4a7fa7; color:#fff;" data-bs-toggle="modal"
-            data-bs-target="#modalCreate">
-            <i class="bi bi-plus-circle"></i> Tạo thông báo
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <form method="GET" action="{{ route('admin.thongbao.index') }}" class="d-flex gap-2 mb-0">
+
+                <select name="doi_tuong" class="form-select w-auto">
+                    <option value="all" {{ request('doi_tuong')=='all' ? 'selected' : '' }}>Tất cả</option>
+                    <option value="sinhvien" {{ request('doi_tuong')=='sinhvien' ? 'selected' : '' }}>Sinh viên</option>
+                    <option value="giangvien" {{ request('doi_tuong')=='giangvien' ? 'selected' : '' }}>Giảng viên
+                    </option>
+                    <option value="doanhnghiep" {{ request('doi_tuong')=='doanhnghiep' ? 'selected' : '' }}>Doanh nghiệp
+                    </option>
+                </select>
+
+                <button class="btn text-white" style="background-color:#4a7fa7;">
+                    <i class="bi bi-funnel-fill"></i> Lọc
+                </button>
+            </form>
+
+            <button type="button" class="btn text-white" style="background-color:#4a7fa7;" data-bs-toggle="modal"
+                data-bs-target="#modalCreate">
+                <i class="bi bi-plus-circle"></i> Tạo thông báo
+            </button>
+        </div>
     </div>
 
+
     <hr class="mt-2 mb-3" style="border-top: 1px solid #c3d0df;">
+
+
+
+
     <!-- Danh sách thông báo -->
     <div class="card shadow-sm">
         <div class="card-header text-white fw-bold" style="background-color: #4A7FA7;">
@@ -125,6 +147,12 @@
                 @endforeach
             </tbody>
         </table>
+
+
+        <div class="d-flex justify-content-center mt-3">
+            {{  $thongbaos->links('pagination::bootstrap-5') }}
+        </div>
+
     </div>
 
     <!-- Modal tạo thông báo -->
@@ -202,4 +230,13 @@
         });
     });
     </script>
+    <style>
+    /* Ẩn mọi phần thông tin mô tả trong pagination */
+    .pagination-info,
+    .text-sm.text-gray-700.leading-5,
+    .small.text-muted {
+        display: none !important;
+    }
+    </style>
+
     @endsection

@@ -46,38 +46,49 @@
                     <td class="px-4 py-2">{{ $vt->ma_vitri ?? 'VT-' . $vt->vitri_id }}</td>
                     <td class="px-4 py-2">{{ $vt->ten_vitri }}</td>
                     <td class="px-4 py-2">{{ $vt->doanhNghiep->ten_dn ?? '-' }}</td>
-                    <td class="px-4 py-2">
-                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                    <td class="px-4 py-2 text-center">
+                        <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
                             {{ $vt->soluong }} chỗ
                         </span>
                     </td>
-                    <td class="px-4 py-2">
+
+                    <td class="px-4 py-2 text-center">
                         @if($vt->trang_thai === 'con_han')
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        <span
+                            class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium whitespace-nowrap">
                             Còn hạn
                         </span>
                         @else
-                        <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-semibold">
+                        <span
+                            class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 text-xs font-medium whitespace-nowrap">
                             Hết hạn
                         </span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 flex items-center gap-2">
-                        <button
-                            class="btn-xem-vitri bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1"
-                            data-id="{{ $vt->vitri_id }}">
-                            <i class="fas fa-eye"></i> Xem
-                        </button>
 
-                        <form action="{{ route('sinhvien.vitri_sinhvien.dangky') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="vitri_id" value="{{ $vt->vitri_id }}">
-                            <button type="submit"
-                                class="bg-[#4A7FA7] hover:bg-[#3a6a8d] text-white px-3 py-1 rounded-md text-sm flex items-center gap-1">
-                                <i class="fas fa-check"></i> Đăng ký
+                    <td class="px-4 py-2 text-center">
+                        <div class="flex items-center justify-center gap-2">
+
+                            <button
+                                class="h-8 px-2.5 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center justify-center"
+                                title="Xem">
+                                <i class="fas fa-eye text-gray-700 text-sm"></i>
                             </button>
-                        </form>
+
+                            <form action="{{ route('sinhvien.vitri_sinhvien.dangky') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="vitri_id" value="{{ $vt->vitri_id }}">
+                                <button type="submit"
+                                    class="h-8 px-3 bg-[#4A7FA7] hover:bg-[#3a6a8d] text-white rounded-md text-xs flex items-center justify-center gap-1 whitespace-nowrap"
+                                    title="Đăng ký">
+                                    <span>Đăng ký</span>
+                                </button>
+
+                            </form>
+
+                        </div>
                     </td>
+
                 </tr>
                 @empty
                 <tr>

@@ -33,24 +33,33 @@
                     <p class="text-muted mb-0">Bạn chưa nộp báo cáo nào.</p>
                     @else
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle text-center">
-                            <thead class="table-light">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light text-center">
                                 <tr>
-                                    <th>#</th>
-                                    <th>Sinh viên</th>
+                                    <th style="width: 50px;">#</th>
+                                    <th style="width: 200px;">Sinh viên</th>
                                     <th>Tiêu đề</th>
-                                    <th>Ngày nộp</th>
-                                    <th>Tệp đính kèm</th>
-                                    <th>Hành động</th>
+                                    <th style="width: 120px;">Ngày nộp</th>
+                                    <th style="width: 120px;">Tệp đính kèm</th>
+                                    <th style="width: 120px;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
-                                    <td>{{ $baoCao->dangKyThucTap->sinhVien->ho_ten ?? '-' }}</td>
+                                    <td class="text-center">1</td>
 
-                                    <td>{{ $baoCao->tieu_de }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($baoCao->ngay_nop)->format('d/m/Y') }}</td>
+                                    <td class="fw-semibold">
+                                        {{ $baoCao->dangKyThucTap->sinhVien->ho_ten ?? '-' }}
+                                    </td>
+
+                                    <td style="max-width: 350px; white-space: normal;">
+                                        {{ $baoCao->tieu_de }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        {{ \Carbon\Carbon::parse($baoCao->ngay_nop)->format('d/m/Y') }}
+                                    </td>
+
                                     <td>
                                         @if($baoCao->file_baocao)
                                         <i class="bi bi-file-earmark-pdf text-danger"></i> Có
@@ -58,22 +67,27 @@
                                         <span class="text-muted">Không</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info btn-view" data-id="{{ $baoCao->baocao_id }}">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-warning btn-edit"
-                                            data-id="{{ $baoCao->baocao_id }}">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger btn-delete"
-                                            data-id="{{ $baoCao->baocao_id }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <button class="btn btn-sm btn-info btn-view"
+                                                data-id="{{ $baoCao->baocao_id }}">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning btn-edit"
+                                                data-id="{{ $baoCao->baocao_id }}">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-delete"
+                                                data-id="{{ $baoCao->baocao_id }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+
                     </div>
                     @endif
                 </div>

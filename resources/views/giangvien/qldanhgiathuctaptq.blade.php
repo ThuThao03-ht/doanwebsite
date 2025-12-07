@@ -58,10 +58,10 @@
                         <th class="py-2 px-4 border">Mã SV</th>
                         <th class="py-2 px-4 border">Họ tên</th>
                         <th class="py-2 px-4 border">Vị trí thực tập</th>
-                        <th class="py-2 px-4 border">Doanh nghiệp</th>
+                        <!-- <th class="py-2 px-4 border">Doanh nghiệp</th> -->
                         <th class="py-2 px-4 border">Tiêu đề báo cáo</th>
                         <th class="py-2 px-4 border">Ngày nộp</th>
-                        <th class="py-2 px-4 border">Trạng thái DK</th>
+                        <!-- <th class="py-2 px-4 border">Trạng thái DK</th> -->
                         <th class="py-2 px-4 border">Điểm</th>
                         <th class="py-2 px-4 border">Chi tiết / Đánh giá</th>
                     </tr>
@@ -72,11 +72,11 @@
                         <td class="py-2 px-4 border">{{ $bc->ma_sv }}</td>
                         <td class="py-2 px-4 border">{{ $bc->ho_ten }}</td>
                         <td class="py-2 px-4 border">{{ $bc->ten_vitri }}</td>
-                        <td class="py-2 px-4 border">{{ $bc->ten_dn }}</td>
+                        <!-- <td class="py-2 px-4 border">{{ $bc->ten_dn }}</td> -->
                         <td class="py-2 px-4 border">{{ $bc->tieu_de }}</td>
                         <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d/m/Y') }}
                         </td>
-                        <td class="py-2 px-4 border">{{ $bc->trangthai_dk }}</td>
+                        <!-- <td class="py-2 px-4 border">{{ $bc->trangthai_dk }}</td> -->
                         <td class="py-2 px-4 border text-center font-semibold">{{ $bc->diem_so ?? '-' }}</td>
                         <td class="py-2 px-4 border text-center">
                             <label for="modal-{{ $bc->baocao_id }}"
