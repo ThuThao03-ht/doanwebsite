@@ -140,8 +140,10 @@ public function store(Request $request)
             'sdt' => ['nullable', 'regex:/^\d{10}$/'],
             'lop' => 'nullable|string|max:50',
             'nganh' => 'nullable|string|max:100'
-        ]);
-
+       ], [
+    'sdt.regex' => 'Số điện thoại không đúng định dạng.',
+    'email.email' => 'Email không hợp lệ.',
+]);
         // Tạo tài khoản user
    
         $user = User::create([
@@ -180,53 +182,46 @@ public function store(Request $request)
     /**
      * Cập nhật sinh viên
      */
-    public function update(Request $request, $id)
-    {
-        DB::beginTransaction();
-        try {
-            $sinhvien = SinhVien::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $sv = SinhVien::findOrFail($id);
 
-            $request->validate([
-    'ho_ten' => 'required|string|max:100',
-    'email' => [
-        'required',
-        'email',
-        Rule::unique('sinhvien')->ignore($sinhvien->sv_id, 'sv_id')
-    ],
-    'sdt' => [
-        'nullable',
-        'regex:/^\d{10}$/'
-    ],
-    'lop' => 'nullable|string|max:50',
-    'nganh' => 'nullable|string|max:100'
-], [
-    'sdt.regex' => 'Số điện thoại phải đúng 10 chữ số và không chứa ký tự đặc biệt.',
+    try {
+        $request->validate([
+            'ho_ten' => 'required|string|max:100',
+            'email'  => 'required|email|unique:sinhvien,email,' . $id . ',sv_id',
+            'sdt'    => ['nullable', 'regex:/^(\+84|0)\d{9}$/'],
+            'lop'    => 'nullable|string|max:50',
+            'nganh'  => 'nullable|string|max:100',
+        ], [
+    'sdt.regex' => 'Số điện thoại không đúng định dạng.',
+    'email.email' => 'Email không hợp lệ.',
 ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
 
+        // Gửi ID modal cần mở lại
+        session()->flash('edit_id', $id);
 
-            $sinhvien->update([
-                'ho_ten' => $request->ho_ten,
-                'lop' => $request->lop,
-                'nganh' => $request->nganh,
-                'email' => $request->email,
-                'sdt' => $request->sdt
-            ]);
-
-            // Cập nhật username user nếu cần
-            if ($sinhvien->user) {
-                $sinhvien->user->update([
-                    'username' => $sinhvien->ma_sv
-                ]);
-            }
-
-            DB::commit();
-            return redirect()->route('admin.sinhvien.index')->with('success', 'Cập nhật sinh viên thành công');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())->withInput();
-        }
+        throw $e; // để Laravel redirect back kèm lỗi
     }
+
+    // Cập nhật DB
+    $sv->update([
+        'ho_ten' => $request->ho_ten,
+        'lop'    => $request->lop,
+        'nganh'  => $request->nganh,
+        'email'  => $request->email,
+        'sdt'    => $request->sdt,
+    ]);
+
+    if ($sv->user) {
+        $sv->user->update([
+            'username' => $sv->ma_sv
+        ]);
+    }
+
+    return redirect()->back()->with('success', 'Cập nhật sinh viên thành công!');
+}
 
     /**
      * Xóa mềm sinh viên

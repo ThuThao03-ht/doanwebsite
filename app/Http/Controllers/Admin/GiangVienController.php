@@ -108,7 +108,10 @@ class GiangVienController extends Controller
             'email' => 'required|email|unique:giangvien,email,' . $id . ',gv_id',
             'sdt' => ['nullable','regex:/^(\+84|0)\d{9}$/'],
 
-        ]);
+        ], [
+    'sdt.regex' => 'Số điện thoại không đúng định dạng.',
+    'email.email' => 'Email không hợp lệ.',
+]);
 
         $gv->update([
             'ho_ten' => $request->ho_ten,
