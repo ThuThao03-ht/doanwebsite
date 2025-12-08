@@ -42,7 +42,7 @@
                     <td class="py-2 px-4 border">{{ $td->ten_vitri }}</td>
                     <td class="py-2 px-4 border">{{ $td->ten_dn }}</td>
                     <td class="py-2 px-4 border">{{ $td->gv_huongdan ?? '-' }}</td>
-                    <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($td->ngay_capnhat)->format('d/m/Y') }}</td>
+                    <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($td->ngay_capnhat)->format('d-m-Y') }}</td>
                     <td class="py-2 px-4 border text-center">
                         <label for="modal-{{ $td->tiendo_id }}"
                             class="cursor-pointer inline-flex items-center gap-1 text-[#4A7FA7] hover:underline">
@@ -77,7 +77,7 @@
                                         <p><strong><i class="fas fa-chalkboard-teacher mr-1"></i>Giảng viên hướng
                                                 dẫn:</strong> {{ $td->gv_huongdan ?? '-' }}</p>
                                         <p><strong><i class="fas fa-calendar-day mr-1"></i>Ngày cập nhật:</strong>
-                                            {{ \Carbon\Carbon::parse($td->ngay_capnhat)->format('d/m/Y') }}</p>
+                                            {{ \Carbon\Carbon::parse($td->ngay_capnhat)->format('d-m-Y') }}</p>
                                         <p><strong><i class="fas fa-align-left mr-1"></i>Nội dung:</strong></p>
                                         <div class="p-3 bg-gray-50 rounded border">{{ $td->noi_dung }}</div>
                                     </div>

@@ -57,7 +57,7 @@
                                     </td>
 
                                     <td class="text-center">
-                                        {{ \Carbon\Carbon::parse($baoCao->ngay_nop)->format('d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($baoCao->ngay_nop)->format('d-m-Y') }}
                                     </td>
 
                                     <td>

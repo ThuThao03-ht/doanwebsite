@@ -74,7 +74,7 @@
                         <td class="py-2 px-4 border">{{ $bc->ten_vitri }}</td>
                         <!-- <td class="py-2 px-4 border">{{ $bc->ten_dn }}</td> -->
                         <td class="py-2 px-4 border">{{ $bc->tieu_de }}</td>
-                        <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d/m/Y') }}
+                        <td class="py-2 px-4 border">{{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d-m-Y') }}
                         </td>
                         <!-- <td class="py-2 px-4 border">{{ $bc->trangthai_dk }}</td> -->
                         <td class="py-2 px-4 border text-center font-semibold">{{ $bc->diem_so ?? '-' }}</td>
@@ -117,7 +117,7 @@
                                             <p><strong><i class="fas fa-align-left mr-1"></i>Nội dung:</strong></p>
                                             <div class="p-3 bg-gray-50 rounded border">{{ $bc->noi_dung }}</div>
                                             <p><strong><i class="fas fa-calendar-day mr-1"></i>Ngày nộp:</strong>
-                                                {{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d/m/Y') }}</p>
+                                                {{ \Carbon\Carbon::parse($bc->ngay_nop)->format('d-m-Y') }}</p>
                                         </div>
 
                                         <!-- Cột phải -->

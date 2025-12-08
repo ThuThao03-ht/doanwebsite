@@ -47,7 +47,8 @@
                     <td>{{ $loop->iteration + ($baocao->currentPage()-1) * $baocao->perPage() }}</td>
                     <td>{{ $item->dangKyThucTap->sinhVien->ho_ten ?? '-' }}</td>
                     <td>{{ $item->tieu_de }}</td>
-                    <td>{{ $item->ngay_nop }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->ngay_nop)->format('d-m-Y') }}</td>
+
                     <td class="text-center">
                         {{-- Xem chi tiết --}}
                         <button class="btn btn-sm btn-info btn-detail" data-id="{{ $item->baocao_id }}"

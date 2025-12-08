@@ -14,7 +14,7 @@
                     <h2 class="text-lg font-bold text-gray-800">{{ $thongBao->tieude }}</h2>
                     <p class="text-sm text-gray-500">
                         <i class="far fa-calendar-alt mr-1"></i>
-                        {{ \Carbon\Carbon::parse($thongBao->ngay_gui)->format('d/m/Y H:i') }}
+                        {{ \Carbon\Carbon::parse($thongBao->ngay_gui)->format('d-m-Y') }}
                     </p>
                 </div>
             </div>
@@ -42,7 +42,7 @@
             <p>
                 <i class="fas fa-clock mr-1 text-green-600"></i>
                 <strong>Đã đọc lúc:</strong>
-                {{ \Carbon\Carbon::parse($thongBao->thoi_gian_doc)->format('H:i d/m/Y') }}
+                {{ \Carbon\Carbon::parse($thongBao->thoi_gian_doc)->format('d-m-Y') }}
             </p>
             @endif
         </div>

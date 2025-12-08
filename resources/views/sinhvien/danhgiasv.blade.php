@@ -41,7 +41,7 @@
                                 <td>{{ number_format($dk->danhGiaDoanhNghiep->diemso, 2) }}</td>
                                 <td>{{ $dk->danhGiaDoanhNghiep->nhanxet }}</td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse($dk->danhGiaDoanhNghiep->ngay_danhgia)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($dk->danhGiaDoanhNghiep->ngay_danhgia)->format('d-m-Y') }}
                                 </td>
 
                             </tr>
@@ -72,7 +72,7 @@
                                 <td>{{ number_format($dk->danhGiaGiangVien->diemso, 2) }}</td>
                                 <td>{{ $dk->danhGiaGiangVien->nhanxet }}</td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse($dk->danhGiaGiangVien->ngay_danhgia)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($dk->danhGiaGiangVien->ngay_danhgia)->format('d-m-Y') }}
                                 </td>
 
                             </tr>

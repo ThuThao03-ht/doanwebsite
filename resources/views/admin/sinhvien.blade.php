@@ -177,6 +177,7 @@
                             <form action="{{ route('admin.sinhvien.update', $sv->sv_id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
+                                <input type="hidden" name="edit_sv_id" value="{{ $sv->sv_id }}">
                                 <div class="modal-content border-0 shadow rounded-3">
 
                                     <!-- Header -->
@@ -204,9 +205,15 @@
                                             <label class="form-label small fw-semibold text-secondary">
                                                 <i class="bi bi-envelope-fill me-1 text-primary"></i> Email
                                             </label>
-                                            <input type="email" name="email" class="form-control form-control-sm"
-                                                value="{{ $sv->email }}" required>
-                                            <div class="invalid-feedback"></div>
+                                            <input type="email" name="email"
+                                                class="form-control border-0 border-bottom rounded-0 @error('email') is-invalid @enderror"
+                                                value="{{ old('email', $sv->email) }}">
+
+                                            @error('email')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
                                         </div>
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold text-secondary">
@@ -228,10 +235,13 @@
                                             <label class="form-label small fw-semibold text-secondary">
                                                 <i class="bi bi-telephone-fill me-1 text-primary"></i> Số điện thoại
                                             </label>
-                                            <input type="text" name="sdt" class="form-control form-control-sm"
-                                                value="{{ $sv->sdt }}" required>
+                                            <input type="text" name="sdt"
+                                                class="form-control border-0 border-bottom rounded-0 @error('sdt') is-invalid @enderror"
+                                                value="{{ old('sdt', $sv->sdt) }}">
+                                            @error('sdt')
+                                            <span class="text-danger" style="font-size: 13px;">{{ $message }}</span>
+                                            @enderror
 
-                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
 
@@ -297,13 +307,8 @@
                                         class="form-control border-0 border-bottom rounded-0" required>
                                 </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label small fw-semibold text-secondary">
-                                        <i class="bi bi-envelope-fill me-1 text-primary"></i> Email
-                                    </label>
-                                    <input type="email" name="email" class="form-control form-control-sm" value="">
-                                    <div class="invalid-feedback"></div>
-                                </div>
+
+
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">
@@ -319,14 +324,34 @@
                                     <input type="text" name="nganh"
                                         class="form-control border-0 border-bottom rounded-0">
                                 </div>
-
-                                <div class="mb-2">
-                                    <label class="form-label small fw-semibold text-secondary">
-                                        <i class="bi bi-telephone-fill me-1 text-primary"></i> Số điện thoại
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">
+                                        <i class="bi bi-envelope-fill me-2 text-primary"></i> Email
                                     </label>
-                                    <input type="text" name="sdt" class="form-control form-control-sm" value="">
-                                    <div class="invalid-feedback"></div>
+                                    <input type="email" name="email"
+                                        class="form-control border-0 border-bottom rounded-0 @error('email') is-invalid @enderror"
+                                        value="{{ old('email') }}">
+
+                                    <div class="invalid-feedback d-block">
+                                        @error('email') {{ $message }} @enderror
+                                    </div>
+
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">
+                                        <i class="bi bi-telephone-fill me-2 text-primary"></i> Số điện thoại
+                                    </label>
+
+                                    <input type="text" name="sdt"
+                                        class="form-control border-0 border-bottom rounded-0 @error('sdt') is-invalid @enderror"
+                                        value="{{ old('sdt') }}">
+
+                                    <div class="invalid-feedback d-block">
+                                        @error('sdt') {{ $message }} @enderror
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -395,15 +420,23 @@
         $msg = addslashes(session('success'));
         echo "Swal.fire({icon:'success',title:'Thành công!',text:'{$msg}',timer:2500,showConfirmButton:false});";
     }
-    if(session()->has('error')) {
-        $msg = addslashes(session('error'));
-        echo "Swal.fire({icon:'error',title:'Lỗi!',text:'{$msg}',timer:2500,showConfirmButton:false});";
-    }
-    if($errors->any()) {
+   if ($errors->any()) {
+    // Nếu có edit_id => lỗi thuộc modal Edit => KHÔNG show SweetAlert
+    if (session('edit_id')) {
+        // bỏ qua
+    } else {
+        // Lỗi của modal Add -> vẫn hiện SweetAlert
         $allErrors = '';
-        foreach($errors->all() as $error) $allErrors .= addslashes($error)."\\n";
-        echo "Swal.fire({icon:'error',title:'Lỗi nhập liệu',html:'{$allErrors}'.replace(/\\n/g,'<br>'),showConfirmButton:true});";
+        foreach ($errors->all() as $error) $allErrors .= addslashes($error) . "\\n";
+        echo "Swal.fire({
+            icon:'error',
+            title:'Lỗi nhập liệu',
+            html:'{$allErrors}'.replace(/\\n/g,'<br>'),
+            showConfirmButton:true
+        });";
     }
+}
+
     ?>
 
         // Xóa sinh viên với SweetAlert confirm
@@ -439,6 +472,18 @@
 
     });
     </script>
+    @if ($errors->any() && !session('edit_id'))
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modalAdd = document.getElementById('modalAdd');
+        if (modalAdd) {
+            new bootstrap.Modal(modalAdd).show();
+        }
+    });
+    </script>
+    @endif
+
+
 
 
     <script>
@@ -544,8 +589,10 @@
 
 
         function attachValidation(form) {
-            const emailInput = form.querySelector('input[name="email"]'); // trong form riêng
-            const sdtInput = form.querySelector('input[name="sdt"]'); // trong form riêng
+            const emailInput = form.querySelector('input[name="email"]');
+            const sdtInput = form.querySelector('input[name="sdt"]');
+
+            if (!emailInput || !sdtInput) return;
 
             emailInput.addEventListener('input', function() {
                 showInlineError(emailInput, validateEmail(emailInput.value) ? '' :
@@ -559,30 +606,49 @@
 
             form.addEventListener('submit', function(e) {
                 let valid = true;
+
                 if (!validateEmail(emailInput.value)) {
                     showInlineError(emailInput, 'Email không đúng định dạng.');
                     valid = false;
                 }
+
                 if (!validatePhone(sdtInput.value)) {
                     showInlineError(sdtInput, 'Số điện thoại phải đúng 10 chữ số.');
                     valid = false;
                 }
-                if (!valid) e.preventDefault(); // Ngăn submit nếu có lỗi
+
+                if (!valid) e.preventDefault();
             });
         }
+
 
 
         // Áp dụng cho modal Add
         const addForm = document.querySelector('#modalAdd form');
         attachValidation(addForm);
 
-        // Áp dụng cho tất cả modal Edit
-        document.querySelectorAll('[id^="modalEdit"] form').forEach(form => attachValidation(form));
 
     });
     </script>
 
+    <div id="validation-data" data-haserror="{{ $errors->any() ? '1' : '0' }}" data-editid="{{ session('edit_id') }}">
+    </div>
 
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let el = document.getElementById('validation-data');
+        let hasError = el.dataset.haserror === "1";
+        let editId = el.dataset.editid;
+
+        if (hasError && editId) {
+            let modalEl = document.getElementById('modalEdit' + editId);
+            if (modalEl) {
+                new bootstrap.Modal(modalEl).show();
+            }
+        }
+    });
+    </script>
 
     <style>
     /* Hiệu ứng hover cho các nút hành động */
@@ -856,6 +922,31 @@
 
     .table td {
         font-size: 14px;
+    }
+
+    /* Giữ form-control luôn chỉ có 1 gạch dưới */
+    .form-control {
+        border: none !important;
+        border-bottom: 1px solid #ccc !important;
+        border-radius: 0 !important;
+    }
+
+    /* Khi focus */
+    .form-control:focus {
+        box-shadow: none !important;
+        border-bottom: 1px solid #0d6efd !important;
+    }
+
+    /* Khi lỗi (Bootstrap thêm .is-invalid) → chỉ gạch dưới đỏ */
+    .form-control.is-invalid {
+        border-bottom: 1px solid #dc3545 !important;
+        background-image: none !important;
+    }
+
+    .invalid-feedback {
+        margin-top: 4px;
+        /* chỉnh khoảng cách gần input hơn */
+        font-size: 0.9rem;
     }
     </style>
     <input type="hidden" id="importError" value="{{ session('import_error') }}">

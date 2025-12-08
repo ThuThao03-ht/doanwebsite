@@ -595,7 +595,7 @@ body {
                         <td>{{ $dk->sinhvien->ho_ten }}</td>
                         <td>{{ $dk->vitriThucTap->ten_vitri }}</td>
                         <td>{{ $dk->vitriThucTap->doanhnghiep->ten_dn ?? 'Chưa có' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($dk->ngay_dangky)->format('d/m/Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($dk->ngay_dangky)->format('d-m-Y') }}</td>
                         <td>
                             @if ($dk->trang_thai == 'cho_duyet')
                             <span class="status-badge pending">Chờ duyệt</span>

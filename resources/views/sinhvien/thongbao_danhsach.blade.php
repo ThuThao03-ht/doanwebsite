@@ -30,7 +30,7 @@
                 <tr class="{{ $tb->da_doc ? '' : 'fw-bold' }}">
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $tb->tieude }}</td>
-                    <td>{{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d/m/Y H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d-m-Y') }}</td>
                     <td>
                         @if($tb->da_doc)
                         <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Đã đọc</span>

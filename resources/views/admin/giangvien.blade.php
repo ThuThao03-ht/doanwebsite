@@ -148,6 +148,7 @@
                             <form action="{{ route('admin.giangvien.update', $gv->gv_id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
+                                <input type="hidden" name="edit_gv_id" value="{{ $gv->gv_id }}">
                                 <div class="modal-content border-0 shadow-lg rounded-4"
                                     style="border: 2px solid #4A7FA7;">
 
@@ -186,8 +187,15 @@
                                                     <i class="bi bi-envelope-at me-2 text-primary"></i> Email
                                                 </label>
                                                 <input type="email" name="email"
-                                                    class="form-control border-0 border-bottom rounded-0"
-                                                    value="{{ $gv->email }}" required>
+                                                    class="form-control border-0 border-bottom rounded-0 @error('email') is-invalid @enderror"
+                                                    value="{{ old('email', $gv->email) }}">
+
+                                                @error('email')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+
                                             </div>
 
                                             <div class="col-md-6">
@@ -195,8 +203,15 @@
                                                     <i class="bi bi-telephone me-2 text-primary"></i> Số điện thoại
                                                 </label>
                                                 <input type="text" name="sdt"
-                                                    class="form-control border-0 border-bottom rounded-0"
-                                                    value="{{ $gv->sdt }}">
+                                                    class="form-control border-0 border-bottom rounded-0 @error('sdt') is-invalid @enderror"
+                                                    value="{{ old('sdt', $gv->sdt) }}">
+
+                                                @error('sdt')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+
                                             </div>
                                         </div>
                                     </div>
@@ -274,8 +289,7 @@
 
                             <input type="email" name="email" class="form-control form-control-sm" value="">
                             <div class="invalid-feedback"></div>
-                            <!-- <input type="email" name="email" class="form-control border-0 border-bottom rounded-0"
-                                required> -->
+
                         </div>
 
                         <div class="col-md-6">
@@ -427,6 +441,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+<div id="validation-data" data-haserror="{{ $errors->any() ? '1' : '0' }}" data-gvid="{{ old('edit_gv_id') }}">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let el = document.getElementById('validation-data');
+    let hasError = el.dataset.haserror === "1";
+    let editGvId = el.dataset.gvid;
+
+    if (hasError && editGvId) {
+        let modalId = "modalEdit" + editGvId;
+        let modalEl = document.getElementById(modalId);
+
+        if (modalEl) {
+            let modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    }
+});
+</script>
+
+
+
 <style>
 .text-theme {
     color: #4A7FA7 !important;
@@ -439,6 +476,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 .btn-theme:hover {
     background-color: #3b6a8e;
+}
+
+/* Giữ kiểu border-bottom dù có lỗi */
+.form-control {
+    border: none !important;
+    border-bottom: 1px solid #ccc !important;
+    border-radius: 0 !important;
+}
+
+/* Khi focus */
+.form-control:focus {
+    box-shadow: none !important;
+    border-bottom: 1px solid #0d6efd !important;
+}
+
+/* Khi có lỗi (Bootstrap thêm .is-invalid) */
+.form-control.is-invalid {
+    border-bottom: 1px solid #dc3545 !important;
+    /* gạch dưới đỏ */
+    background-image: none !important;
+}
+
+.form-control {
+    border: none !important;
+    border-bottom: 1px solid #ccc !important;
+    border-radius: 0 !important;
+    padding-bottom: 6px !important;
+    padding-top: 6px !important;
+}
+
+.form-control:focus {
+    box-shadow: none !important;
+    border-bottom: 2px solid #0d6efd !important;
+}
+
+.form-control.is-invalid {
+    border-bottom: 2px solid #dc3545 !important;
 }
 </style>
 

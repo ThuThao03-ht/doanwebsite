@@ -55,7 +55,7 @@
                                 <td>{{ $t->dangKyThucTap->sinhVien->ho_ten ?? '-' }}</td>
                                 <td>{{ $t->dangKyThucTap->viTriThucTap->ten_vitri ?? '-' }}</td>
                                 <td>{{ Str::limit($t->noi_dung, 60) }}</td>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($t->ngay_capnhat)->format('d/m/Y') }}
+                                <td class="text-center">{{ \Carbon\Carbon::parse($t->ngay_capnhat)->format('d-m-Y') }}
                                 </td>
                                 <td class="text-center">
                                     @if($t->file_dinhkem)

@@ -68,7 +68,7 @@
                     <td>{{ $tb->tieude }}</td>
                     <td>{{ $tb->noidung }}</td>
                     <td>{{ $tb->doi_tuong }}</td>
-                    <td>{{ $tb->ngay_gui->format('d/m/Y') }}</td>
+                    <td>{{ $tb->ngay_gui->format('d-m-Y') }}</td>
                     <td>{{ $tb->nguoiGui ? $tb->nguoiGui->username : 'N/A' }}</td>
                     <td>
                         <div class="d-flex gap-2">

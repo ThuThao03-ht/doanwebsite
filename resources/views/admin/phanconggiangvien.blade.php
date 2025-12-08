@@ -60,11 +60,12 @@
                             </td>
                             <td>
                                 @if($pc->ngay_phancong)
-                                {{ $pc->ngay_phancong }}
+                                {{ \Carbon\Carbon::parse($pc->ngay_phancong)->format('d-m-Y') }}
                                 @else
                                 <em class="text-muted">Chưa có</em>
                                 @endif
                             </td>
+
                             <td>{{ $pc->ghi_chu }}</td>
                             <td class="text-center">
                                 <button class="btn btn-info btn-sm btn-view" data-id="{{ $pc->pc_id }}">Xem</button>

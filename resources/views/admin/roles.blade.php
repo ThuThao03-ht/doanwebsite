@@ -50,8 +50,9 @@
                         <td>{{ $role->role_id }}</td>
                         <td>{{ $role->role_name }}</td>
                         <td>{{ $role->users_count }}</td>
-                        <td>{{ \Carbon\Carbon::parse($role->created_at)->format('d/m/Y H:i') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($role->updated_at)->format('d/m/Y H:i') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($role->created_at)->format('d-m-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($role->updated_at)->format('d-m-Y') }}</td>
+
                         <td>
                             <div class="d-flex justify-content-center gap-2">
                                 <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"

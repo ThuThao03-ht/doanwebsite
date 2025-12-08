@@ -61,7 +61,7 @@
                         <td>{{ $dg->dangKyThucTap->sinhVien->ho_ten ?? 'N/A' }}</td>
 
                         <td class="text-center">{{ $dg->diemso }}</td>
-                        <td class="text-center">{{ \Carbon\Carbon::parse($dg->ngay_danhgia)->format('d/m/Y') }}</td>
+                        <td class="text-center">{{ \Carbon\Carbon::parse($dg->ngay_danhgia)->format('d-m-Y') }}</td>
                         <td class="text-center">
                             <button class="btn btn-info btn-sm btn-view" data-id="{{ $dg->dg_dn_id }}">
                                 Xem chi tiết

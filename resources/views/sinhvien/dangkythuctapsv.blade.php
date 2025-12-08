@@ -26,7 +26,7 @@
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-4 py-2">{{ $dk->dk_id ?? 'DK-' . $dk->id }}</td>
                         <td class="px-4 py-2">{{ $dk->viTriThucTap->ten_vitri ?? '-' }}</td>
-                        <td class="px-4 py-2">{{ $dk->created_at->format('d/m/Y') }}</td>
+                        <td class="px-4 py-2">{{ $dk->created_at->format('d-m-Y') }}</td>
                         <td class="px-4 py-2">
                             @php
                             $statusColors = [

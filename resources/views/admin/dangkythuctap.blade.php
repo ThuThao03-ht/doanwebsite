@@ -72,7 +72,11 @@
                             <td class="text-center fw-semibold">{{ $loop->iteration }}</td>
                             <td>{{ $dk->sinhVien->ho_ten ?? '—' }}</td>
                             <td>{{ $dk->viTriThucTap->ten_vitri ?? '—' }}</td>
-                            <td class="text-center">{{ $dk->ngay_dangky }}</td>
+                            <td class="text-center">
+                                {{ \Carbon\Carbon::parse($dk->ngay_dangky)->format('d-m-Y') }}
+                            </td>
+
+
                             <td class="text-center">
                                 <span class="badge bg-{{ 
                                     $dk->trang_thai == 'cho_duyet' ? 'secondary' :

@@ -24,7 +24,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2v-7H3v7a2 2 0 002 2z" />
                         </svg>
-                        {{ \Carbon\Carbon::parse($thongBao->ngay_gui)->format('d/m/Y H:i') }}
+                        {{ \Carbon\Carbon::parse($thongBao->ngay_gui)->format('d-m-Y') }}
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span class="font-semibold mr-1">Đã đọc lúc:</span>
-                <span>{{ \Carbon\Carbon::parse($thongBao->thoi_gian_doc)->format('H:i d/m/Y') }}</span>
+                <span>{{ \Carbon\Carbon::parse($thongBao->thoi_gian_doc)->format('d-m-Y') }}</span>
             </div>
         </div>
 

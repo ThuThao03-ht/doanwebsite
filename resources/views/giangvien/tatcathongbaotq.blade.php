@@ -25,7 +25,7 @@
                 </a>
 
                 <p class="text-sm text-gray-400">
-                    {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d/m/Y H:i') }}
+                    {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d-m-Y') }}
                 </p>
             </div>
 

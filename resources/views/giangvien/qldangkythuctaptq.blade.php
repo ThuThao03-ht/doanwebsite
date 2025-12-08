@@ -103,7 +103,7 @@
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-calendar-day text-[#4A7FA7] w-5 text-center"></i>
                                         <span><strong>Ngày đăng ký:</strong>
-                                            {{ \Carbon\Carbon::parse($dk->ngay_dangky)->format('d/m/Y') }}</span>
+                                            {{ \Carbon\Carbon::parse($dk->ngay_dangky)->format('d-m-Y') }}</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-hourglass-half text-[#4A7FA7] w-5 text-center"></i>

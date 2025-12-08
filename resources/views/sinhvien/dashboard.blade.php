@@ -99,7 +99,7 @@
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-4 py-2">{{ $dk->dk_id ?? 'DK-' . $dk->id }}</td>
                             <td class="px-4 py-2">{{ $dk->viTriThucTap->ten_vitri ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $dk->created_at->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2">{{ $dk->created_at->format('d-m-Y') }}</td>
                             <td class="px-4 py-2">
                                 <span
                                     class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
@@ -151,7 +151,7 @@
                         {{ $tb->tieude }}
                     </div>
                     <div class="text-xs text-gray-500">
-                        {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d/m/Y') }}
+                        {{ \Carbon\Carbon::parse($tb->ngay_gui)->format('d-m-Y') }}
                     </div>
                 </div>
             </a>
@@ -302,7 +302,7 @@
                     <i class="fa-solid fa-calendar-days mr-2"></i>
                     Đăng ký:
                     @if($latestDangKy)
-                    {{ \Carbon\Carbon::parse($latestDangKy->created_at)->format('d/m/Y') }}
+                    {{ \Carbon\Carbon::parse($latestDangKy->created_at)->format('d-m-Y') }}
                     @else
                     Chưa có đăng ký
                     @endif
