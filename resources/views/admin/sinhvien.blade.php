@@ -304,7 +304,9 @@
                                         <i class="bi bi-person me-2 text-primary"></i> Họ tên
                                     </label>
                                     <input type="text" name="ho_ten"
-                                        class="form-control border-0 border-bottom rounded-0" required>
+                                        class="form-control border-0 border-bottom rounded-0 @error('ho_ten') is-invalid @enderror"
+                                        value="{{ old('ho_ten') }}">
+
                                 </div>
 
 
@@ -314,7 +316,8 @@
                                     <label class="form-label fw-semibold text-secondary">
                                         <i class="bi bi-building me-2 text-primary"></i> Lớp
                                     </label>
-                                    <input type="text" name="lop" class="form-control border-0 border-bottom rounded-0">
+                                    <input type="text" name="lop" class="form-control border-0 border-bottom rounded-0"
+                                        value="{{ old('lop') }}">
                                 </div>
 
                                 <div class="col-md-6">
@@ -322,7 +325,8 @@
                                         <i class="bi bi-book me-2 text-primary"></i> Ngành
                                     </label>
                                     <input type="text" name="nganh"
-                                        class="form-control border-0 border-bottom rounded-0">
+                                        class="form-control border-0 border-bottom rounded-0"
+                                        value="{{ old('nganh') }}">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">
@@ -420,22 +424,22 @@
         $msg = addslashes(session('success'));
         echo "Swal.fire({icon:'success',title:'Thành công!',text:'{$msg}',timer:2500,showConfirmButton:false});";
     }
-   if ($errors->any()) {
-    // Nếu có edit_id => lỗi thuộc modal Edit => KHÔNG show SweetAlert
-    if (session('edit_id')) {
-        // bỏ qua
-    } else {
-        // Lỗi của modal Add -> vẫn hiện SweetAlert
-        $allErrors = '';
-        foreach ($errors->all() as $error) $allErrors .= addslashes($error) . "\\n";
-        echo "Swal.fire({
-            icon:'error',
-            title:'Lỗi nhập liệu',
-            html:'{$allErrors}'.replace(/\\n/g,'<br>'),
-            showConfirmButton:true
-        });";
-    }
-}
+//    if ($errors->any()) {
+//     // Nếu có edit_id => lỗi thuộc modal Edit => KHÔNG show SweetAlert
+//     if (session('edit_id')) {
+//         // bỏ qua
+//     } else {
+//         // Lỗi của modal Add -> vẫn hiện SweetAlert
+//         $allErrors = '';
+//         foreach ($errors->all() as $error) $allErrors .= addslashes($error) . "\\n";
+//         echo "Swal.fire({
+//             icon:'error',
+//             title:'Lỗi nhập liệu',
+//             html:'{$allErrors}'.replace(/\\n/g,'<br>'),
+//             showConfirmButton:true
+//         });";
+//     }
+// }
 
     ?>
 
@@ -484,6 +488,28 @@
     @endif
 
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalAdd = document.getElementById('modalAdd');
+
+        modalAdd.addEventListener('hidden.bs.modal', function() {
+            const form = modalAdd.querySelector('form');
+
+            // Reset dữ liệu input
+            form.reset();
+
+            // Xóa trạng thái lỗi
+            form.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+
+            // Xóa message lỗi
+            form.querySelectorAll('.invalid-feedback').forEach(el => {
+                el.textContent = '';
+            });
+        });
+    });
+    </script>
 
 
     <script>

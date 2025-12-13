@@ -170,7 +170,8 @@
                                                 </label>
                                                 <input type="text" name="ho_ten"
                                                     class="form-control border-0 border-bottom rounded-0"
-                                                    value="{{ $gv->ho_ten }}" required>
+                                                    value="{{ $gv->ho_ten }}" data-origin="{{ $gv->ho_ten }}">
+
                                             </div>
 
                                             <div class="col-md-6">
@@ -179,7 +180,8 @@
                                                 </label>
                                                 <input type="text" name="bo_mon"
                                                     class="form-control border-0 border-bottom rounded-0"
-                                                    value="{{ $gv->bo_mon }}">
+                                                    value="{{ $gv->bo_mon }}" data-origin="{{ $gv->bo_mon }}">
+
                                             </div>
 
                                             <div class="col-md-6">
@@ -188,7 +190,8 @@
                                                 </label>
                                                 <input type="email" name="email"
                                                     class="form-control border-0 border-bottom rounded-0 @error('email') is-invalid @enderror"
-                                                    value="{{ old('email', $gv->email) }}">
+                                                    value="{{ $gv->email }}" data-origin="{{ $gv->email }}">
+
 
                                                 @error('email')
                                                 <div class="invalid-feedback d-block">
@@ -204,7 +207,7 @@
                                                 </label>
                                                 <input type="text" name="sdt"
                                                     class="form-control border-0 border-bottom rounded-0 @error('sdt') is-invalid @enderror"
-                                                    value="{{ old('sdt', $gv->sdt) }}">
+                                                    value="{{ $gv->sdt }}" data-origin="{{ $gv->sdt }}">
 
                                                 @error('sdt')
                                                 <div class="invalid-feedback d-block">
@@ -271,15 +274,18 @@
                             <label class="form-label fw-semibold text-secondary">
                                 <i class="bi bi-person me-2 text-primary"></i> Họ tên
                             </label>
-                            <input type="text" name="ho_ten" class="form-control border-0 border-bottom rounded-0"
-                                required>
+                            <input type="text" name="ho_ten" value="{{ old('ho_ten') }}" class="form-control border-0 border-bottom rounded-0
+              @error('ho_ten') is-invalid @enderror">
+
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold text-secondary">
                                 <i class="bi bi-journal-text me-2 text-primary"></i> Bộ môn
                             </label>
-                            <input type="text" name="bo_mon" class="form-control border-0 border-bottom rounded-0">
+                            <input type="text" name="bo_mon" class="form-control border-0 border-bottom rounded-0"
+                                value="{{ old('bo_mon') }}">
+
                         </div>
 
                         <div class="col-md-6">
@@ -287,8 +293,13 @@
                                 <i class="bi bi-envelope-at me-2 text-primary"></i> Email
                             </label>
 
-                            <input type="email" name="email" class="form-control form-control-sm" value="">
-                            <div class="invalid-feedback"></div>
+                            <input type="email" name="email" value="{{ old('email') }}" class="form-control border-0 border-bottom rounded-0
+              @error('email') is-invalid @enderror">
+
+                            <div class="invalid-feedback d-block">
+                                @error('email') {{ $message }} @enderror
+                            </div>
+
 
                         </div>
 
@@ -297,8 +308,13 @@
                                 <i class="bi bi-telephone me-2 text-primary"></i> Số điện thoại
                             </label>
 
-                            <input type="text" name="sdt" class="form-control form-control-sm" value="">
-                            <div class="invalid-feedback"></div>
+                            <input type="text" name="sdt" value="{{ old('sdt') }}" class="form-control border-0 border-bottom rounded-0
+              @error('sdt') is-invalid @enderror">
+
+                            <div class="invalid-feedback d-block">
+                                @error('sdt') {{ $message }} @enderror
+                            </div>
+
                             <!-- <input type="text" name="sdt" class="form-control border-0 border-bottom rounded-0"> -->
                         </div>
                     </div>
@@ -309,9 +325,11 @@
                     <button type="submit" class="btn px-4 text-white" style="background-color: #4A7FA7;">
                         <i class="bi bi-check-circle me-1"></i> Thêm mới
                     </button>
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal"
+                        id="btnCancelAdd">
                         <i class="bi bi-x-circle me-1"></i> Hủy
                     </button>
+
                 </div>
             </div>
         </form>
@@ -390,6 +408,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.querySelectorAll('[id^="modalEdit"]').forEach(modal => {
+
+        modal.addEventListener('hidden.bs.modal', function() {
+
+            const form = modal.querySelector('form');
+
+            // Reset về dữ liệu gốc từ DB
+            form.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.dataset.origin !== undefined) {
+                    el.value = el.dataset.origin;
+                }
+                el.classList.remove('is-invalid');
+            });
+
+            // Xóa thông báo lỗi
+            form.querySelectorAll('.invalid-feedback').forEach(el => {
+                el.textContent = '';
+            });
+
+        });
+    });
+
+});
+</script>
 
 <!-- SweetAlert Thông báo & Xác nhận -->
 <script>
@@ -444,6 +489,18 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="validation-data" data-haserror="{{ $errors->any() ? '1' : '0' }}" data-gvid="{{ old('edit_gv_id') }}">
 </div>
 
+<!-- 
+@if ($errors->any())
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let modal = new bootstrap.Modal(document.getElementById('modalAdd'));
+    modal.show();
+});
+</script>
+@endif -->
+
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let el = document.getElementById('validation-data');
@@ -461,6 +518,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalAdd = document.getElementById('modalAdd');
+
+    modalAdd.addEventListener('hidden.bs.modal', function() {
+        const form = modalAdd.querySelector('form');
+
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+
+            // KHÔNG xóa mã giảng viên
+            if (el.name === 'ma_gv') return;
+
+            el.value = '';
+            el.classList.remove('is-invalid');
+        });
+
+        // Clear message lỗi
+        form.querySelectorAll('.invalid-feedback').forEach(el => {
+            el.textContent = '';
+        });
+    });
+});
+</script>
+
 
 
 
