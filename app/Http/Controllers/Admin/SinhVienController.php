@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SinhVienExport;
 use App\Imports\SinhVienImport;
+use Illuminate\Validation\ValidationException;
 
 
 
@@ -127,11 +128,65 @@ public function index()
 //     }
 
 
+// public function store(Request $request)
+// {
+//     DB::beginTransaction();
+//     try {
+//         // Tạo mã SV mới
+//         $newMaSV = $this->taoMaSV();
+
+//         $request->validate([
+//             'ho_ten' => 'required|string|max:100',
+//             'email' => 'required|email|unique:sinhvien,email',
+//             'sdt' => ['nullable', 'regex:/^\d{10}$/'],
+//             'lop' => 'nullable|string|max:50',
+//             'nganh' => 'nullable|string|max:100'
+//        ], [
+//     'sdt.regex' => 'Số điện thoại không đúng định dạng.',
+//     'email.email' => 'Email không hợp lệ.',
+//      'email.unique' => 'Email đã được sử dụng.',
+// ]);
+//         // Tạo tài khoản user
+   
+//         $user = User::create([
+//             'username' => $newMaSV,
+//             'password_hash' => Hash::make('123456'),
+//             'role_id' => 2,
+//             'nguoi_tao_id' => 1,
+//             'mat_khau_moi' => 1,
+//             'status' => 'active'
+//         ]);
+//         // Tạo sinh viên
+//         SinhVien::create([
+//             'ma_sv'   => $newMaSV,
+//             'ho_ten'  => $request->ho_ten,
+//             'lop'     => $request->lop,
+//             'nganh'   => $request->nganh,
+//             'email'   => $request->email,
+//             'sdt'     => $request->sdt,
+//             'user_id' => $user->user_id
+//         ]);
+
+//         DB::commit();
+
+//         return redirect()->route('admin.sinhvien.index')
+//             ->with('success', 'Thêm sinh viên thành công');
+
+//     } catch (\Exception $e) {
+//         DB::rollBack();
+//         return redirect()->back()
+//             ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+//             ->withInput();
+//     }
+// }
+
+
+
 public function store(Request $request)
 {
     DB::beginTransaction();
+
     try {
-        // Tạo mã SV mới
         $newMaSV = $this->taoMaSV();
 
         $request->validate([
@@ -140,12 +195,12 @@ public function store(Request $request)
             'sdt' => ['nullable', 'regex:/^\d{10}$/'],
             'lop' => 'nullable|string|max:50',
             'nganh' => 'nullable|string|max:100'
-       ], [
-    'sdt.regex' => 'Số điện thoại không đúng định dạng.',
-    'email.email' => 'Email không hợp lệ.',
-]);
-        // Tạo tài khoản user
-   
+        ], [
+            'email.email' => 'Email không hợp lệ.',
+            'email.unique' => 'Email đã được sử dụng.',
+            'sdt.regex' => 'Số điện thoại phải đúng 10 chữ số.',
+        ]);
+
         $user = User::create([
             'username' => $newMaSV,
             'password_hash' => Hash::make('123456'),
@@ -154,7 +209,7 @@ public function store(Request $request)
             'mat_khau_moi' => 1,
             'status' => 'active'
         ]);
-        // Tạo sinh viên
+
         SinhVien::create([
             'ma_sv'   => $newMaSV,
             'ho_ten'  => $request->ho_ten,
@@ -170,14 +225,20 @@ public function store(Request $request)
         return redirect()->route('admin.sinhvien.index')
             ->with('success', 'Thêm sinh viên thành công');
 
-    } catch (\Exception $e) {
+    }
+    // VALIDATION → TRẢ VỀ INLINE ERROR
+    catch (ValidationException $e) {
+        DB::rollBack();
+        throw $e; // Laravel tự xử lý & đẩy về $errors
+    }
+    //  CHỈ BẮT LỖI HỆ THỐNG THẬT
+    catch (\Exception $e) {
         DB::rollBack();
         return redirect()->back()
-            ->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())
+            ->with('error', 'Có lỗi hệ thống, vui lòng thử lại.')
             ->withInput();
     }
 }
-
 
     /**
      * Cập nhật sinh viên
@@ -196,6 +257,7 @@ public function update(Request $request, $id)
         ], [
     'sdt.regex' => 'Số điện thoại không đúng định dạng.',
     'email.email' => 'Email không hợp lệ.',
+    'email.unique' => 'Email đã được sử dụng.',
 ]);
     } catch (\Illuminate\Validation\ValidationException $e) {
 
